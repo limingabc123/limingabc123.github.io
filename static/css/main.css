@@ -2,11 +2,11 @@
 
 
 :root{
-    --h-title-color:#3948d2;
+    --h-title-color:#02030A;
 }
 
 .header {
-    border-bottom: solid 2px var(--bs-blue);
+    border-bottom: solid 10px var(--bs-black);
     z-index: 10000;
 }
 
@@ -16,10 +16,10 @@
 
 .top-section {
     position: relative;
-    padding: 10rem 0;
+    padding: 7rem 0;
     background-position: center;
-    background-size: cover;
-    height: 25rem;
+    background-size: coer;
+    height: 0rem;
 }
 
 .top-section h2 {
