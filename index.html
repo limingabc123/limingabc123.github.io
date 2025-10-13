@@ -25,7 +25,7 @@ body,td,th {
 	font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
 	color: #000;
 	margin-left: 25px;
-  margin-right: 25px;
+    margin-right: 25px;
 }
 a:link {
 	color: black;
@@ -40,11 +40,33 @@ body {
 	background-color: #FFFFFF;
 	color: #D6D6D6;
 }
+/* 新增：黑色版权框样式 */
+.copyright-black-box {
+    background-color: #000; /* 黑色背景 */
+    color: #fff; /* 白色文字（确保可读性） */
+    text-align: center; /* 内容居中 */
+    padding: 1.5rem 0; /* 上下内边距，控制框高度 */
+    margin: 2rem auto 0; /* 顶部间距，水平居中 */
+    max-width: 1200px; /* 与主体内容宽度一致，形成"长框"效果 */
+}
+/* 版权框内链接样式（确保白色链接可见） */
+.copyright-black-box a {
+    color: #fff;
+    text-decoration: underline;
+}
+.copyright-black-box a:hover {
+    color: #ccc; /* hover时浅灰，提升交互感 */
+}
+/* 返回顶部图标容器样式优化 */
+.go-top-container {
+    text-align: center;
+    margin: 1rem 0;
+}
 </style>
 </head>
 <body>
 <!-- 个人基本信息表格 -->
-<table width="1200" height="238" border="0" align="center" cellpadding="0" cellspacing="0">
+<table width="1200" border="0" align="center" cellpadding="0" cellspacing="0">
   <tbody><tr>
     <td width="218" rowspan="3"><img src="static/assets/img/photo.png" width="188" alt="Ming Li Photo"></td> <!-- 替换为李茗头像路径 -->
     <td height="43" align="left" valign="middle"><p><font size="6px"><strong>Ming Li</strong></font><font size="5px"><strong>（李茗）</strong></font></p></td>
@@ -63,11 +85,10 @@ body {
   </tr>
 </tbody></table>
 
-<!-- 主体内容表格 -->
-<table width="1200" height="1616" border="0" align="center" cellpadding="0" cellspacing="0">
+<!-- 主体内容表格：删除固定height=1616，改为auto自适应高度（去除空白核心） -->
+<table width="1200" border="0" align="center" cellpadding="0" cellspacing="0">
   <tbody><tr>
-    <td height="1616" align="left" valign="top">
-      <!-- <h1><span style="font-size: large;">[<a href="./index.html#Biography">Biography</a>] [<a href="./index.html#Honors">Honors</a>] [<a href="./index.html#Publications">Publications</a>] [<a href="./index.html#Activities">Professional Activities</a>]</span></h1> -->
+    <td align="left" valign="top">
       <h1><span style="font-size: large;">[<a href="./index.html#Biography">Biography</a>] [<a href="./index.html#Experience">Experience</a>] [<a href="./index.html#Honors">Honors</a>]</span></h1>
       <!-- 个人简介板块 -->
       <p><font size="5px"><strong>Biography</strong></font></p>
@@ -89,17 +110,16 @@ body {
         &nbsp; &nbsp; School of Computer Science and Technology, <a href="https://www.xxu.edu.cn/">Xinxiang University</a>, Xinxiang, China.</p>
 
       <hr>
-      <hr>
-      <!-- 荣誉板块 -->
+      <!-- 荣誉板块：表格删除固定height=66，自适应内容（消除局部空白） -->
       <p><a id="Honors"><font size="5px"><strong>Honors</strong></font></a></p>
       <table width="1200" border="0" cellspacing="0" cellpadding="0">
         <tbody><tr>
-          <td width="600" height="66">
+          <td width="600">
             • &nbsp;"IEERA Cup" International College English Reading Competition (China Division), Second Prize, June 2023.<br>
             • &nbsp;18th China Graduate Electronic Design Contest (GigaDevice Cup), Third Prize, July 2023.<br>
             &nbsp; &nbsp; Project: "A Lightweight and Personalized Image Recognition System Based on Edge Intelligence and Its Application-Federated Learning"<br>
           </td>
-          <td width="300" height="66">
+          <td width="300">
             IEERA (International English Education Research Association)<br>
             China Graduate Electronic Design Contest Organizing Committee<br>
             —<br>
@@ -107,99 +127,49 @@ body {
         </tr>
       </tbody></table>
       <hr>
-
-      <!-- <hr> -->
-
-      <!-- 出版物板块 -->
-      <!-- <p><a id="Publications"><font size="5px"><strong>Selected Publications</strong></font></a></p>
-      <p>• &nbsp;<font size="4px"><strong><u><i>Journal/Magazine</i></u></strong> </font> <i>(* denotes the corresponding author)</i></p>
-      <p>[J5] Peiyan Yuan, <strong>Ming Li</strong>, et al., "LOC-SAC: Lyapunov-guided Online Collaborative Offloading Strategy Based on Soft Actor-Critic," <i>Under Review</i>.</p>
-      <p>[J4] Xiaoyan Zhao, <strong>Ming Li</strong>, Peiyan Yuan*, "An Online Energy-Saving Offloading Algorithm in Mobile Edge Computing with Lyapunov Optimization," <i>Ad Hoc Networks</i>, vol. 156, p. 103580, 2024. <strong>(SCI-Q1 TOP)</strong></p>
-      <p>[J3] Peiyan Yuan, <strong>Ming Li</strong>, Shuo Li, Chun Liu, Xia Zhao*, "Maximizing the Capacity of Edge Networks with Multicasting," <i>Applied Sciences</i>, vol. 13, no. 14, p. 8424, 2023. <strong>(SCI-Q2)</strong></p>
-
-      <p>• &nbsp;<font size="4px"><strong><u><i>Conference</i></u></strong></font></p>
-      <p>[C2] Peiyan Yuan, <strong>Ming Li</strong>, et al., "A Dynamic Service Offloading Algorithm Based on Lyapunov Optimization in Edge Computing," <i>28th European Conference on Artificial Intelligence (ECAI)</i>, Accepted. <strong>(CCF-B)</strong></p>
-      <p class="pink-bg">[C1] <strong>Ming Li</strong>, Peiyan Yuan*, "A Lyapunov Optimization Strategy with Deep Reinforcement Learning in Cloud-Edge Collaborative Service Offloading Scenarios," <i>10th International Conference on Computer and Communications (ICCC)</i>, Chengdu, China, 2024, pp. 551-555, doi:10.1109/ICCC62609.2024.10942027. <strong>(EI)</strong></p>
-
-      <hr> -->
-
-      <!-- 专业活动板块 -->
-      <!-- <p><a id="Activities"><font size="5px"><strong>Professional Activities</strong></font></a></p>
-      <p>• Reviewer</p>
-      <p> 
-        — <i>Ad Hoc Networks</i> (SCI-Q1 TOP)<br>
-        — <i>Applied Sciences</i> (SCI-Q2)<br>
-        — International Conference on Computer and Communications (ICCC) (EI)<br>
-        — European Conference on Artificial Intelligence (ECAI) (CCF-B)<br>
-        — IEEE International Conference on Communications (IEEE ICC) (CCF-C)<br>
-      </p> -->
-      <!-- <hr> -->
     </td> 
   </tr>
 </tbody></table>
 
-<!-- 页脚统计与版权 -->
-<!-- <table width="1100" height="36" border="0" align="center" cellpadding="0" cellspacing="0">
-  <tbody><tr>
-    <td width="500" height="36" align="left" valign="middle">
-      <font size="3px">Total Visitors: </font> -->
-      <!-- Counter Code START -->
-      <!-- <script language="javascript" src="http://hitcounters.net/counter.php?id=11790&cmd=cookie"></script>
-      <img src="http://hitcounters.net/counter.php?id=11790&cmd=img_only" alt="Visitor Counter" border="0" > -->
-      <!-- Counter Code END -->
-    <!-- </td>
-    <td width="330" height="36" align="right"><font size="2px"> Copyright © 2025 Ming Li. All rights reserved.</font></td>
-  </tr>
-</tbody></table>
+<!-- 返回顶部：优化布局，与版权框分离 -->
+<div class="go-top-container">
+  <a href="./index.html#" class="go-top">
+    <img src="./Homepage_files/top.png" width="66" alt="Back to Top">
+  </a>
+</div>
 
-<footer>
-<hr>
-<a href="./index.html#" class="go-top">
-<img src="./Homepage_files/top.png" width="66" alt="Back to Top">
-</a>
-</footer> -->
+<!-- 页脚版权：使用黑色长框容器，内容居中 -->
+<div class="copyright-black-box">
+    <div id="copyright-text"></div>
+    <div style="margin: 0.5rem 0;">
+        <a href="https://github.com/limingabc123">Github</a>
+        <span class="mx-1">&middot;</span>
+        <a href="https://github.com/limingabc123/limingabc123.github.io/blob/main/LICENSE">License</a>
+    </div>
+    <div style="font-size: 0.9rem; opacity: 0.8;">@ Ming Li 2025-2028. All Rights Reserved</div>
+</div>
 
 <!-- 返回顶部脚本 -->
-<!-- <script src="./Homepage_files/jquery.min.js"></script>
+<script src="./Homepage_files/jquery.min.js"></script>
 <script>
-	$(document).ready(function()  {
-	  // 显示/隐藏返回顶部按钮
-	  $(window).scroll(function() {
-	  	if ($(this).scrollTop() > 200) {
-	  	  	$('.go-top').fadeIn(200);
-	  	  	}else{
-	  	  		$('.go-top').fadeOut(200);
-	  	  	}
-	  });
-	  // 平滑滚动到顶部
-	  $('.go-top').click(function(event) {
-	  	event.preventDefault();
-	  	$('html, body').animate({scrollTop: 0}, 300);
-	  });
-	});
-</script> -->
- <!-- Footer-->
-    <footer class="bg-bottom text-center py-5">
-        <div class="container px-5">
-            <div class="text-white-50 small">
-                <div id="copyright-text" class="mb-2"></div>
-                <a id="github-link" href="https://github.com/limingabc123">@ Ming Li 2025-2028. All Rights Reserved<br></a>
-                <!-- <span class="mx-1">&middot;</span> -->
-                
-                <!-- <a id="license-link" href="https://github.com/senli1073/senli1073.github.io/blob/main/LICENSE">License</a> -->
-                
-                <a id="github-link" href="https://github.com/limingabc123">Github</a>
-                <span class="mx-1">&middot;</span>
-                <a id="license-link" href="https://github.com/limingabc123/limingabc123.github.io/blob/main/LICENSE">License</a>
-            </div>
-        </div>
-    </footer>
+    $(document).ready(function()  {
+        // 显示/隐藏返回顶部按钮
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 200) {
+                $('.go-top').fadeIn(200);
+            } else {
+                $('.go-top').fadeOut(200);
+            }
+        });
+        // 平滑滚动到顶部
+        $('.go-top').click(function(event) {
+            event.preventDefault();
+            $('html, body').animate({scrollTop: 0}, 300);
+        });
+    });
 
-</body>
-<script>
-    // 获取当前年份
+    // 版权年份脚本（保留原功能）
     const currentYear = new Date().getFullYear();
-    // 设置版权文本
     document.getElementById('copyright-text').innerHTML = `&copy; ${currentYear} Ming Li. All rights reserved.`; 
 </script>
 </body>
