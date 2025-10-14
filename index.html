@@ -57,28 +57,15 @@ body {
 .copyright-black-box a:hover {
     color: #ccc; /* hover时浅灰，提升交互感 */
 }
-/* 关键修改：返回顶部按钮悬浮样式（脱离文档流，不占布局） */
+/* 返回顶部图标容器样式优化 */
 .go-top-container {
-    position: fixed; /* 固定定位：脱离文档流，悬浮在页面固定位置 */
-    top: 20px; /* 距离页面顶部20px（页眉上方区域） */
-    right: 20px; /* 距离页面右侧20px（不遮挡主体内容） */
-    z-index: 9999; /* 层级最高，避免被其他元素遮挡 */
-    opacity: 0.7; /* 默认半透明，体现"若隐若现" */
-    transition: all 0.3s ease; /* 所有状态变化平滑过渡（动态效果核心） */
-}
-/* 鼠标 hover 时增强可见性（动态交互） */
-.go-top-container:hover {
-    opacity: 1; /* 完全显示 */
-    transform: scale(1.1); /* 轻微放大，提示可点击 */
-}
-/* 返回顶部按钮默认隐藏（初始不显示，滚动后再出现） */
-.go-top {
-    display: none;
+    text-align: center;
+    margin: 1rem 0;
 }
 </style>
 </head>
 <body>
-<!-- 个人基本信息表格（页眉区域） -->
+<!-- 个人基本信息表格 -->
 <table width="1200" border="0" align="center" cellpadding="0" cellspacing="0">
   <tbody><tr>
     <td width="218" rowspan="3"><img src="static/assets/img/photo.png" width="188" alt="Ming Li Photo"></td> <!-- 替换为李茗头像路径 -->
@@ -86,7 +73,7 @@ body {
 	<td width="188" rowspan="3"><img src="static/assets/img/xidian.png" width="188" alt="Xidian University Logo"></td> <!-- 替换为西电logo路径 -->
   </tr>
   <tr>
-    <td height="43" align="left" valign="middle"><p><font size="4px"><strong>Currently working toward Ph.D.</strong></font></p></td>
+    <td height="25"> <i>Currently working toward Ph.D. And a member of <a href="https://unicxidian.org/" style="color: blue;">Ubiquitous Networking and Intelligent Computing Lab (UNIC)</a></i> </td>
   </tr>
     <td height="157"><p>
       <strong>Ph.D. Student</strong><br>
@@ -144,14 +131,15 @@ body {
   </tr>
 </tbody></table>
 
-<!-- 关键修改：返回顶部按钮（用文字临时测试，确保可见） -->
+<!-- 返回顶部：优化布局，与版权框分离 -->
 <div class="go-top-container">
-  <a href="#top" class="go-top" style="font-size: 16px; background-color: #333; color: #fff; padding: 10px; border-radius: 4px; text-decoration: none; display: inline-block;">
-    返回顶部
+  <a href="./index.html#" class="go-top">
+    <img src="static/assets/img/normal.png" width="66" alt="Back to Top">
   </a>
 </div>
 
 <!-- 页脚版权：使用黑色长框容器，内容居中 -->
+
 <div class="copyright-black-box">
     <div id="copyright-text"></div>
     <div style="font-size: 0.9rem; opacity: 0.8;">@ Ming Li 2025-2028. All Rights Reserved</div>
@@ -162,22 +150,22 @@ body {
     </div>
 </div>
 
-<!-- 返回顶部脚本（改用CDN确保jQuery加载，降低显示阈值） -->
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<!-- 返回顶部脚本 -->
+<script src="./Homepage_files/jquery.min.js"></script>
 <script>
     $(document).ready(function()  {
-        // 滚动监听：降低显示阈值为50px（滚动少量距离就显示）
+        // 显示/隐藏返回顶部按钮
         $(window).scroll(function() {
-            if ($(this).scrollTop() > 50) {
-                $('.go-top').fadeIn(300);
+            if ($(this).scrollTop() > 200) {
+                $('.go-top').fadeIn(200);
             } else {
-                $('.go-top').fadeOut(300);
+                $('.go-top').fadeOut(200);
             }
         });
-        // 点击按钮平滑滚动到顶部
+        // 平滑滚动到顶部
         $('.go-top').click(function(event) {
             event.preventDefault();
-            $('html, body').animate({scrollTop: 0}, 500);
+            $('html, body').animate({scrollTop: 0}, 300);
         });
     });
 
