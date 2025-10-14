@@ -40,15 +40,14 @@ body {
 	background-color: #FFFFFF;
 	color: #D6D6D6;
 }
-/* 新增：黑色版权框样式（修改后） */
+/* 新增：黑色版权框样式 */
 .copyright-black-box {
     background-color: #000; /* 黑色背景 */
     color: #fff; /* 白色文字（确保可读性） */
     text-align: center; /* 内容居中 */
-    padding: 1.5rem 25px; /* 上下内边距，左右内边距与body的margin一致，保证手机端两侧留白一致 */
-    margin: 2rem 0 0; /* 顶部间距，水平方向取消auto（因宽度为100%） */
-    width: 100%; /* 宽度自适应父容器（body） */
-    box-sizing: border-box; /* 确保padding包含在width内，避免溢出 */
+    padding: 1.5rem 0; /* 上下内边距，控制框高度 */
+    margin: 2rem auto 0; /* 顶部间距，水平居中 */
+    max-width: 1200px; /* 与主体内容宽度一致，形成"长框"效果 */
 }
 /* 版权框内链接样式（确保白色链接可见） */
 .copyright-black-box a {
@@ -139,7 +138,8 @@ body {
   </a>
 </div>
 
-<!-- 页脚版权：使用黑色长框容器，内容居中（样式已修改为自适应） -->
+<!-- 页脚版权：使用黑色长框容器，内容居中 -->
+
 <div class="copyright-black-box">
     <div id="copyright-text"></div>
     <div style="font-size: 0.9rem; opacity: 0.8;">@ Ming Li 2025-2028. All Rights Reserved</div>
