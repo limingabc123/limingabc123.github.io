@@ -86,7 +86,7 @@ body {
 	<td width="188" rowspan="3"><img src="static/assets/img/xidian.png" width="188" alt="Xidian University Logo"></td> <!-- 替换为西电logo路径 -->
   </tr>
   <tr>
-    <td height="43" align="left" valign="middle"><p><font size="4px"><strong>Ph.D. Candidate | Researcher | Software Engineer</strong></font></p></td>
+    <td height="43" align="left" valign="middle"><p><font size="4px"><strong>Currently working toward Ph.D.</strong></font></p></td>
   </tr>
     <td height="157"><p>
       <strong>Ph.D. Student</strong><br>
@@ -144,10 +144,10 @@ body {
   </tr>
 </tbody></table>
 
-<!-- 关键修改：返回顶部按钮（移到页眉下方、主体内容上方，不影响布局） -->
+<!-- 关键修改：返回顶部按钮（用文字临时测试，确保可见） -->
 <div class="go-top-container">
-  <a href="#top" class="go-top"> <!-- 链接改为#top，直接回到页面顶部（无需依赖index.html路径） -->
-    <img src="static/assets/img/normal.png" width="66" alt="Back to Top">
+  <a href="#top" class="go-top" style="font-size: 16px; background-color: #333; color: #fff; padding: 10px; border-radius: 4px; text-decoration: none; display: inline-block;">
+    返回顶部
   </a>
 </div>
 
@@ -162,22 +162,22 @@ body {
     </div>
 </div>
 
-<!-- 返回顶部脚本（保留核心逻辑，优化路径） -->
-<script src="./Homepage_files/jquery.min.js"></script>
+<!-- 返回顶部脚本（改用CDN确保jQuery加载，降低显示阈值） -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <script>
     $(document).ready(function()  {
-        // 滚动监听：页面向下滚动超过200px时显示按钮，否则隐藏（动态若隐若现）
+        // 滚动监听：降低显示阈值为50px（滚动少量距离就显示）
         $(window).scroll(function() {
-            if ($(this).scrollTop() > 200) {
-                $('.go-top').fadeIn(300); // 300ms淡入，更平滑
+            if ($(this).scrollTop() > 50) {
+                $('.go-top').fadeIn(300);
             } else {
-                $('.go-top').fadeOut(300); // 300ms淡出
+                $('.go-top').fadeOut(300);
             }
         });
         // 点击按钮平滑滚动到顶部
         $('.go-top').click(function(event) {
             event.preventDefault();
-            $('html, body').animate({scrollTop: 0}, 500); // 500ms滚动，体验更好
+            $('html, body').animate({scrollTop: 0}, 500);
         });
     });
 
