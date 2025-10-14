@@ -57,15 +57,28 @@ body {
 .copyright-black-box a:hover {
     color: #ccc; /* hover时浅灰，提升交互感 */
 }
-/* 返回顶部图标容器样式优化 */
+/* 关键修改：返回顶部按钮悬浮样式（脱离文档流，不占布局） */
 .go-top-container {
-    text-align: center;
-    margin: 1rem 0;
+    position: fixed; /* 固定定位：脱离文档流，悬浮在页面固定位置 */
+    top: 20px; /* 距离页面顶部20px（页眉上方区域） */
+    right: 20px; /* 距离页面右侧20px（不遮挡主体内容） */
+    z-index: 9999; /* 层级最高，避免被其他元素遮挡 */
+    opacity: 0.7; /* 默认半透明，体现"若隐若现" */
+    transition: all 0.3s ease; /* 所有状态变化平滑过渡（动态效果核心） */
+}
+/* 鼠标 hover 时增强可见性（动态交互） */
+.go-top-container:hover {
+    opacity: 1; /* 完全显示 */
+    transform: scale(1.1); /* 轻微放大，提示可点击 */
+}
+/* 返回顶部按钮默认隐藏（初始不显示，滚动后再出现） */
+.go-top {
+    display: none;
 }
 </style>
 </head>
 <body>
-<!-- 个人基本信息表格 -->
+<!-- 个人基本信息表格（页眉区域） -->
 <table width="1200" border="0" align="center" cellpadding="0" cellspacing="0">
   <tbody><tr>
     <td width="218" rowspan="3"><img src="static/assets/img/photo.png" width="188" alt="Ming Li Photo"></td> <!-- 替换为李茗头像路径 -->
@@ -131,15 +144,14 @@ body {
   </tr>
 </tbody></table>
 
-<!-- 返回顶部：优化布局，与版权框分离 -->
+<!-- 关键修改：返回顶部按钮（移到页眉下方、主体内容上方，不影响布局） -->
 <div class="go-top-container">
-  <a href="./index.html#" class="go-top">
+  <a href="#top" class="go-top"> <!-- 链接改为#top，直接回到页面顶部（无需依赖index.html路径） -->
     <img src="static/assets/img/normal.png" width="66" alt="Back to Top">
   </a>
 </div>
 
 <!-- 页脚版权：使用黑色长框容器，内容居中 -->
-
 <div class="copyright-black-box">
     <div id="copyright-text"></div>
     <div style="font-size: 0.9rem; opacity: 0.8;">@ Ming Li 2025-2028. All Rights Reserved</div>
@@ -150,22 +162,22 @@ body {
     </div>
 </div>
 
-<!-- 返回顶部脚本 -->
+<!-- 返回顶部脚本（保留核心逻辑，优化路径） -->
 <script src="./Homepage_files/jquery.min.js"></script>
 <script>
     $(document).ready(function()  {
-        // 显示/隐藏返回顶部按钮
+        // 滚动监听：页面向下滚动超过200px时显示按钮，否则隐藏（动态若隐若现）
         $(window).scroll(function() {
             if ($(this).scrollTop() > 200) {
-                $('.go-top').fadeIn(200);
+                $('.go-top').fadeIn(300); // 300ms淡入，更平滑
             } else {
-                $('.go-top').fadeOut(200);
+                $('.go-top').fadeOut(300); // 300ms淡出
             }
         });
-        // 平滑滚动到顶部
+        // 点击按钮平滑滚动到顶部
         $('.go-top').click(function(event) {
             event.preventDefault();
-            $('html, body').animate({scrollTop: 0}, 300);
+            $('html, body').animate({scrollTop: 0}, 500); // 500ms滚动，体验更好
         });
     });
 
