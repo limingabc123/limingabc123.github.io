@@ -91,45 +91,53 @@
     box-shadow: 0 1px 4px rgba(0,0,0,0.05);
   }
 
- /* 关键修改：返回顶部按钮悬浮样式（右下角悬浮 + 文字+箭头组合） */
+/* 最后一个模块：作为按钮的定位参考（必须加relative） */
+.last-section {
+  position: relative; 
+}
+
+/* 返回顶部按钮容器：基于.last-section绝对定位 */
 .go-top-container {
-    position: fixed; /* 固定定位，脱离文档流悬浮 */
-    bottom: 20px;    /* 距离页面底部20px */
-    right: 20px;     /* 距离页面右侧20px */
-    z-index: 9999;   /* 层级最高，避免被遮挡 */
-    opacity: 0.7;    /* 默认半透明，体现“若隐若现” */
-    transition: all 0.3s ease; /* 平滑过渡效果 */
+  position: absolute; /* 相对于.last-section定位 */
+  bottom: 20px;       /* 距离模块底部20px */
+  right: 20px;        /* 距离模块右侧20px */
+  z-index: 9999;      /* 层级最高，不被遮挡 */
+  opacity: 0.7;       /* 默认半透明，若隐若现 */
+  transition: all 0.3s ease; /* 悬浮/显示过渡效果 */
 }
 
+/* 按钮整体样式：文字+箭头垂直排列 */
 .go-top {
-    display: flex;
-    flex-direction: column; /* 文字与箭头垂直排列 */
-    align-items: center;    /* 水平居中 */
-    text-decoration: none;  /* 去除链接下划线 */
-    color: #333;            /* 文字颜色 */
-    background-color: #ddd; /* 按钮背景色（浅灰） */
-    padding: 6px 10px;      /* 内边距，控制按钮大小 */
-    border-radius: 4px;     /* 圆角，增强柔和感 */
-    font-size: 14px;        /* 文字大小 */
+  display: flex;
+  flex-direction: column; /* 垂直排列（箭头在上，Top在下） */
+  align-items: center;    /* 水平居中 */
+  text-decoration: none;  /* 去除链接下划线 */
+  color: #333;            /* 文字/箭头颜色 */
+  background-color: #ddd; /* 按钮背景（浅灰） */
+  padding: 6px 10px;      /* 内边距，控制按钮大小 */
+  border-radius: 4px;     /* 圆角，增强柔和感 */
+  font-size: 14px;        /* 文字大小 */
 }
 
-/* 箭头样式：通过CSS边框生成向上的三角形 */
+/* 上三角箭头：通过CSS边框生成 */
 .go-top .arrow {
-    display: inline-block;
-    width: 0;
-    height: 0;
-    /* 左右边框透明，上边框为深色，形成“向上箭头” */
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 5px solid #333; /* 箭头颜色，与文字一致 */
-    margin-top: 2px; /* 箭头与文字的间距 */
+  display: inline-block;
+  width: 0;
+  height: 0;
+  /* 左右边框透明，下边框为深色 → 形成“上三角” */
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid #333; /* 箭头颜色（与文字一致） */
+  margin-bottom: 2px; /* 箭头与Top文字的间距 */
 }
 
-/* 鼠标悬浮时增强可见性 */
+/* 鼠标悬浮效果：增强可见性 */
 .go-top-container:hover {
-    opacity: 1;           /* 完全不透明 */
-    transform: scale(1.1);/* 轻微放大，提示可点击 */
+  opacity: 1;           /* 完全不透明 */
+  transform: scale(1.1);/* 轻微放大，提示可点击 */
 }
+
+
   .copyright-black-box {
     background: #222;
     color: #fff; text-align: center;
