@@ -91,17 +91,12 @@
     box-shadow: 0 1px 4px rgba(0,0,0,0.05);
   }
 
-/* 最后一个模块：作为按钮的定位参考（必须加relative） */
-.last-section {
-  position: relative; 
-}
-
 /* 返回顶部按钮容器：基于.last-section绝对定位 */
 .go-top-container {
   position: absolute; /* 相对于.last-section定位 */
-  bottom: 100px;       /* 距离模块底部20px */
+  bottom: 100px;      /* 距离模块底部100px（可根据需求调整） */
   right: 20px;        /* 距离模块右侧20px */
-  z-index: 9999;      /* 层级最高，不被遮挡 */
+  z-index: 9999;      /* 层级最高，避免被遮挡 */
   opacity: 0.9;       /* 默认半透明，若隐若现 */
   transition: all 0.3s ease; /* 悬浮/显示过渡效果 */
 }
@@ -112,11 +107,12 @@
   flex-direction: column; /* 垂直排列（箭头在上，Top在下） */
   align-items: center;    /* 水平居中 */
   text-decoration: none;  /* 去除链接下划线 */
-  color: hsl(0, 12%, 87%);            /* 文字/箭头颜色 */
-  background-color: #0f0e0e; /* 按钮背景（浅灰） */
+  color: #fff;            /* 文字颜色：白色 */
+  background-color: #000; /* 按钮背景：黑色 */
   padding: 6px 10px;      /* 内边距，控制按钮大小 */
   border-radius: 4px;     /* 圆角，增强柔和感 */
   font-size: 14px;        /* 文字大小 */
+  transition: color 0.2s ease, border-color 0.2s ease; /* 颜色过渡更平滑 */
 }
 
 /* 上三角箭头：通过CSS边框生成 */
@@ -124,10 +120,10 @@
   display: inline-block;
   width: 0;
   height: 0;
-  /* 左右边框透明，下边框为深色 → 形成“上三角” */
+  /* 左右边框透明，下边框为白色 → 形成“上三角” */
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
-  border-bottom: 5px solid #fdfcfc; /* 箭头颜色（与文字一致） */
+  border-bottom: 5px solid #fff; /* 箭头颜色：白色 */
   margin-bottom: 2px; /* 箭头与Top文字的间距 */
 }
 
@@ -135,6 +131,15 @@
 .go-top-container:hover {
   opacity: 1;           /* 完全不透明 */
   transform: scale(1.1);/* 轻微放大，提示可点击 */
+}
+
+/* 点击（活跃）状态：文字和箭头变蓝色 */
+.go-top:active {
+  color: #007bff; /* 文字变蓝色 */
+}
+
+.go-top:active .arrow {
+  border-bottom-color: #007bff; /* 箭头变蓝色 */
 }
 
 
