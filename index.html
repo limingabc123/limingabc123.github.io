@@ -1,182 +1,252 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script type="text/javascript" async="" src="./Homepage_files/analytics.js.下载"></script>
-<script type="text/javascript" async="" src="./Homepage_files/js"></script>
-<script async="" src="./Homepage_files/js(1)"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'UA-73132829-1');
-</script>
-<link rel="shortcut icon" href="./Homepage_files/xidianlogo.png"> <!-- 替换为西电logo路径 -->
+<meta charset="UTF-8">
 <title>Ming Li's Homepage（李茗）</title>
-<link href="./Homepage_files/backcolor.css" rel="stylesheet" type="text/css">
-<link rel="stylesheet" href="./Homepage_files/top.css">
-<style type="text/css">
-  .pink-bg {
-    background-color: #ffe4e1; /* 浅粉色，保留原样式用于第一作者论文标注 */
+<link rel="icon" href="xidianlogo.png">
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+<style>
+  * {
+    margin: 0; padding: 0;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
   }
-body,td,th {
-	font-size: 16px;
-	font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
-	color: #000;
-	margin-left: 25px;
-    margin-right: 25px;
-}
-a:link {
-	color: black;
-}
-a:visited {
-	color: black;
-}
-a:hover {
- color: grey;
-}
-body {
-	background-color: #FFFFFF;
-	color: #D6D6D6;
-}
-/* 新增：黑色版权框样式 */
-.copyright-black-box {
-    background-color: #000; /* 黑色背景 */
-    color: #fff; /* 白色文字（确保可读性） */
-    text-align: center; /* 内容居中 */
-    padding: 1.5rem 0; /* 上下内边距，控制框高度 */
-    margin: 2rem auto 0; /* 顶部间距，水平居中 */
-    max-width: 1200px; /* 与主体内容宽度一致，形成"长框"效果 */
-}
-/* 版权框内链接样式（确保白色链接可见） */
-.copyright-black-box a {
-    color: #fff;
-    text-decoration: underline;
-}
-.copyright-black-box a:hover {
-    color: #ccc; /* hover时浅灰，提升交互感 */
-}
-/* 返回顶部图标容器样式优化 */
-.go-top-container {
-    text-align: center;
-    margin: 1rem 0;
-}
+  body {
+    font-size: 16px;
+    font-family: "Palatino Linotype","Book Antiqua",Palatino,serif;
+    color: #333;
+    margin: 0 auto;
+    max-width: 1200px;
+    padding: 0 20px;
+    position: relative;
+  }
+
+  #particles-js {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg,#f7f7f7 0%,#e9ecef 100%);
+    z-index: -1; opacity: 0.7;
+  }
+
+  a {
+    color: #0000FF; text-decoration: none; position: relative;
+  }
+  a:hover { color: #0000CC; }
+  a::after {
+    content: ''; position: absolute; width: 0; height: 2px;
+    bottom: -2px; left: 0; background-color: #0000FF;
+    transition: width 0.3s ease;
+  }
+  a:hover::after { width: 100%; }
+
+  .header-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 15px 0;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+  }
+  .avatar, .logo {
+    border-radius: 8px; transition: transform 0.5s ease;
+  }
+  .avatar:hover, .logo:hover {
+    transform: scale(1.05);
+  }
+
+  .nav-bar {
+    position: sticky; top: 0;
+    background: rgba(255,255,255,0.95);
+    padding: 10px 25px;
+    border-radius: 8px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+    margin: 8px 0;
+    text-align: left;
+    z-index: 10;
+  }
+  .nav-bar a {
+    margin: 0 10px;
+    font-weight: bold;
+    font-size: 17px;
+    color: #000000;
+  }
+  .nav-bar a:hover {
+    transform: translateY(-2px);
+    color: #0000CC;
+  }
+
+  .section-title {
+    font-size: 22px; color: #0000CC;
+    margin: 15px 0 10px;
+    padding-left: 12px;
+    border-left: 4px solid #0000FF;
+  }
+
+  .content-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 18px 25px;
+    margin: 10px 0;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+
+  .go-top-container { text-align: center; margin: 20px 0; }
+  .go-top { display: inline-block; transition: all 0.5s ease; }
+  .go-top:hover { transform: rotate(360deg) scale(1.1); }
+
+  .copyright-black-box {
+    background: #222;
+    color: #fff; text-align: center;
+    padding: 20px 0; margin: 25px auto 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0,0,255,0.2);
+  }
+  .copyright-black-box a {
+    color: #b3e5fc; margin: 0 8px;
+  }
+  .copyright-black-box a:hover { color: #81d4fa; }
+
+  .content-section {
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .content-section.active { opacity: 1; transform: translateY(0); }
 </style>
+
 </head>
 <body>
-<!-- 个人基本信息表格 -->
-<table width="1200" border="0" align="center" cellpadding="0" cellspacing="0">
-  <tbody><tr>
-    <td width="218" rowspan="3"><img src="static/assets/img/photo.png" width="188" alt="Ming Li Photo"></td> <!-- 替换为李茗头像路径 -->
-    <td height="43" align="left" valign="middle"><p><font size="6px"><strong>Ming Li</strong></font><font size="5px"><strong>（李茗😊）</strong></font></p></td>
-	<td width="188" rowspan="3"><img src="static/assets/img/xidian.png" width="188" alt="Xidian University Logo"></td> <!-- 替换为西电logo路径 -->
-  </tr>
-  <tr>
-    <td height="25"> <i>Currently working toward Ph.D. And a member of <a href="https://unicxidian.org/" style="color: blue;">Ubiquitous Networking and Intelligent Computing Lab (UNIC)</a></i> </td>
-  </tr>
-    <td height="157"><p>
-      <strong>Ph.D. Student</strong><br>
-      <a href="https://www.xidian.edu.cn/info/1054/13151.htm"style="color: blue;">School of Information and Communication Engineering</a><br>
-      <a href="https://www.xidian.edu.cn/"style="color: blue;">Xidian University</a><br>
-      Xi'an, Shaanxi 710071, China<br>
-	  ✨Lab: <a href="https://unicxidian.org/"style="color: blue;">Ubiquitous Networking and Intelligent Computing Lab (UNIC)</a>, No. 2 South Taibai Road, Yanta District</p>
-    <p>Email: 25011110751@xidian.edu.cn</p></td>
-  </tr>
-</tbody></table>
+<div id="particles-js"></div>
 
-<!-- 主体内容表格：删除固定height=1616，改为auto自适应高度（去除空白核心） -->
-<table width="1200" border="0" align="center" cellpadding="0" cellspacing="0">
-  <tbody><tr>
-    <td align="left" valign="top">
-      <h1><span style="font-size: large;">[<a href="./index.html#Biography">Biography</a>] [<a href="./index.html#Experience">Experience</a>] [<a href="./index.html#Honors">Honors</a>]</span></h1>
-      <!-- 个人简介板块 -->
-      <p><font size="5px"><strong>Biography</strong></font></p>
-      <p>Ming Li received the M.E. degree in Computer Science and Technology from <a href="https://www.htu.edu.cn/"style="color: blue;">Henan Normal University</a>, Xinxiang, China, in 2024 (supervised by <a href="https://www.htu.edu.cn/cs/2019/0227/c10537a138429/page.htm"style="color: blue;">Prof. Peiyan Yuan</a>). She worked at Hyperfusion Digital Co., Ltd. & Zhengzhou College of Finance and Economics from August 2024 to June 2025. Currently, she is pursuing the Ph.D. degree in Information and Communication Engineering at <a href="https://www.xidian.edu.cn/"style="color: blue;">Xidian University</a>, Xi'an, China, under the supervision of <a href="https://web.xidian.edu.cn/nancheng/"style="color: blue;">Prof. Nan Cheng</a>, and is a member of the <a href="https://unicxidian.org/">Ubiquitous Networking and Intelligent Computing Lab (UNIC)</a>.</p>
-      <p>Her main research interests include:
-        <br>1. Generative AI (focus on signal processing and practical applications);
-        <br>2. Decision-making AI (Lyapunov-based Deep Reinforcement Learning for Resource allocation of Adapted communication Scenarios:
-( • - • )  
- |つ 🚗,🛰️,✈️,📶......);
-        <br>3. Develop AI-driven plugin services for intelligent communication systems (multi-agent resource scheduling, network resource management, and self-optimization).</p>
-      <p>&nbsp;<strong>My skills</strong>
-        <br>Programming Language: C,Java, Matlab, Python, PHP, MySQL, GO, GUN/Linux, H5, C3, JS, JQuery.
-        <br>Hobby：The Development of Web and APP & Cluster construction.</p>
-        <hr>
-      <!-- 经历板块 -->
-      <p><a id="Experience"></a><font size="5px"><strong>Experience</strong></font></p>
-      <p>• &nbsp;Ph.D. student: 2025 to Present,<br>
-        &nbsp; &nbsp; Information and Communication Engineering, College of Communication Engineering, <a href="https://www.xidian.edu.cn/">Xidian University</a>, Xi'an, China.<br>
-      • &nbsp; August 2024 to June 2025,<br>
-        &nbsp; &nbsp; Hyperfusion Digital Co., Ltd. & Zhengzhou College of Finance and Economics, Zhengzhou, China.<br>
-      • &nbsp;M.E. Degree: 2021 to July 2024,<br>
-        &nbsp; &nbsp; Computer Science and Technology, College of Computer and Information Engineering <a href="https://www.htu.edu.cn/">Henan Normal University</a>, Xinxiang, China (Supervisor: Prof. Peiyan Yuan).<br>
-      • &nbsp;B.E. Degree: 2017 to 2021,<br>
-        &nbsp; &nbsp; Computer Science and Technology, College of Computer and Information Engineering, <a href="https://www.xxu.edu.cn/">Xinxiang University</a>, Xinxiang, China.</p>
-
-      <hr>
-      <!-- 荣誉板块：表格删除固定height=66，自适应内容（消除局部空白） -->
-      <p><a id="Honors"><font size="5px"><strong>Honors</strong></font></a></p>
-      <table width="1200" border="0" cellspacing="0" cellpadding="0">
-        <tbody><tr>
-          <td width="600">
-            • &nbsp;"IEERA Cup" International College English Reading Competition (China Division), Second Prize, June 2023.<br>
-            • &nbsp;18th China Graduate Electronic Design Contest (GigaDevice Cup), Third Prize, July 2023.<br>
-            &nbsp; &nbsp; Project: "A Lightweight and Personalized Image Recognition System Based on Edge Intelligence and Its Application-Federated Learning"<br>
-          </td>
-          <td width="300">
-            IEERA (International English Education Research Association)<br>
-            China Graduate Electronic Design Contest Organizing Committee<br>
-            <br>
-          </td>
-        </tr>
-      </tbody></table>
-      <hr>
-    </td> 
-  </tr>
-</tbody></table>
-
-<!-- 返回顶部：优化布局，与版权框分离 -->
-<div class="go-top-container">
-  <a href="./index.html#" class="go-top">
-    <img src="static/assets/img/normal.png" width="66" alt="Back to Top">
-  </a>
+<div class="header-card">
+  <table width="100%">
+    <tr>
+      <td width="188"><img src="static/assets/img/photo.png" width="188" alt="Ming Li Photo" class="avatar"></td>
+      <td align="left" valign="middle">
+        <p><font size="6"><strong>Ming Li</strong></font>
+        <font size="5"><strong>（李茗😊）</strong></font></p>
+        <i>Currently working toward Ph.D. And a member of
+        <a href="https://unicxidian.org/">Ubiquitous Networking and Intelligent Computing Lab (UNIC)</a></i><br><br>
+        <strong>Ph.D. Student</strong><br>
+        <a href="https://www.xidian.edu.cn/info/1054/13151.htm">School of Information and Communication Engineering</a><br>
+        <a href="https://www.xidian.edu.cn/">Xidian University</a><br>
+        Xi'an, Shaanxi 710071, China<br>
+        ✨Lab: <a href="https://unicxidian.org/">UNIC</a>, No. 2 South Taibai Road, Yanta District<br>
+        Email: 25011110751@xidian.edu.cn
+      </td>
+      <td width="188"><img src="static/assets/img/xidian.png" width="188" alt="Xidian University Logo" class="logo"></td>
+    </tr>
+  </table>
 </div>
 
-<!-- 页脚版权：使用黑色长框容器，内容居中 -->
+<div class="nav-bar">
+  |<a href="#Biography">Biography</a> |<a href="#Experience">Experience</a> |<a href="#Honors">Honors</a>
+</div>
+
+<!-- Biography -->
+<div class="content-section" id="Biography">
+  <div class="content-card">
+  <p class="section-title">Biography</p>
+  <p>Ming Li received the M.E. degree in Computer Science and Technology from 
+  <a href="https://www.htu.edu.cn/">Henan Normal University</a>, Xinxiang, China, in 2024 
+  (supervised by <b><a href="https://www.htu.edu.cn/cs/2019/0227/c10537a138429/page.htm"style="color: #8B0000;">Prof. Peiyan Yuan</a></b>). She worked at Hyperfusion Digital Co., Ltd. & Zhengzhou College of Finance and Economics 
+  from August 2024 to June 2025. Currently, she is pursuing the Ph.D. degree in Information and Communication Engineering 
+  at <a href="https://www.xidian.edu.cn/">Xidian University</a>, Xi’an, China, under the supervision of <b><a href="https://web.xidian.edu.cn/nancheng/"style="color: #8B0000;">Prof. Nan Cheng</a></b>, 
+  and is a member of the <a href="https://unicxidian.org/">Ubiquitous Networking and Intelligent Computing Lab (UNIC)</a>.</p>
+
+  <br><p><b>Her main research interests include:</b><br>
+  1. Generative AI (focus on signal processing and practical applications);<br>
+  2. Decision-making AI (Lyapunov-based Deep Reinforcement Learning for Resource Allocation of Adaptive Communication Scenarios);<br>
+  3. Development of AI-driven plugin systems for intelligent communication systems (multi-agent resource scheduling, network resource management, and self-optimization).</p>
+
+  <br><p><b>My skills</b><br>
+  Programming Language: C, Java, Matlab, Python, PHP, MySQL, GO, GUN/Linux, H5, C3, JS, JQuery.<br>
+  Hobby: The development of Web and APP & Cluster construction.
+  </p>
+  </div>
+</div>
+
+<!-- Experience -->
+<div class="content-section" id="Experience">
+  <div class="content-card">
+  <p class="section-title">Experience</p>
+  <ul style="line-height:1.8;">
+    <li><b>Ph.D. student</b>, 2025 to Present<br>
+        School of Information and Communication Engineering, 
+        <a href="https://www.xidian.edu.cn/">Xidian University</a>, Xi’an, China.</li><br>
+    <li><b>Hyperfusion Digital Co., Ltd.</b> & Zhengzhou College of Finance and Economics, Zhengzhou, China.<br>
+        August 2024 to June 2025.</li><br>
+    <li><b>M.E. Degree</b>: 2021 to July 2024.<br>
+        College of Computer and Information Engineering, 
+        <a href="https://www.htu.edu.cn/">Henan Normal University</a>, Xinxiang, China (Supervisor: Prof. Peiyan Yuan).</li><br>
+    <li><b>B.E. Degree</b>: 2017 to 2021.<br>
+        College of Computer Science and Technology, 
+        <a href="https://www.xxmu.edu.cn/">Xinxiang University</a>, Xinxiang, China.</li>
+  </ul>
+  </div>
+</div>
+
+<!-- Honors -->
+<div class="content-section" id="Honors">
+  <div class="content-card">
+  <p class="section-title">Honors</p>
+  <ul style="line-height:1.8;">
+    <li>“<b>IEERA Cup</b>” International College English Reading Competition (China Division), Second Prize, June 2023.  
+        <i>IEERA (International English Education Research Association)</i></li><br>
+    <li><b>18th China Graduate Electronic Design Contest (GigaDevice Cup)</b>, Third Prize, July 2023.  
+        <i>China Graduate Electronic Design Contest Organizing Committee</i></li><br>
+    <li>Project: “A Lightweight and Personalized Image Recognition System Based on Edge Intelligence and Its Application-Federated Learning.”</li>
+  </ul>
+  </div>
+</div>
+
+<div class="go-top-container">
+  <a href="#" class="go-top"><img src="normal.png" width="66" alt="Back to Top"></a>
+</div>
 
 <div class="copyright-black-box">
-    <div id="copyright-text"></div>
-    <div style="font-size: 0.9rem; opacity: 0.8;">@ Ming Li 2025-2028. All Rights Reserved</div>
-    <div style="margin: 0.5rem 0;">
-        <a href="https://github.com/limingabc123">Github</a>
-        <span class="mx-1">&middot;</span>
-        <a href="https://github.com/limingabc123/limingabc123.github.io/blob/main/LICENSE">License</a>
-    </div>
+  <div id="copyright-text"></div>
+  <div style="font-size:0.9rem;opacity:0.8;">@ Ming Li 2025-2028. All Rights Reserved</div>
+  <div>
+    <a href="https://github.com/limingabc123">Github</a> ·
+    <a href="https://github.com/limingabc123/limingabc123.github.io/blob/main/LICENSE">License</a>
+  </div>
 </div>
 
-<!-- 返回顶部脚本 -->
-<script src="./Homepage_files/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function()  {
-        // 显示/隐藏返回顶部按钮
-        $(window).scroll(function() {
-            if ($(this).scrollTop() > 200) {
-                $('.go-top').fadeIn(200);
-            } else {
-                $('.go-top').fadeOut(200);
-            }
-        });
-        // 平滑滚动到顶部
-        $('.go-top').click(function(event) {
-            event.preventDefault();
-            $('html, body').animate({scrollTop: 0}, 300);
-        });
-    });
+particlesJS("particles-js", {
+  "particles": {
+    "number": {"value":80,"density":{"enable":true,"value_area":800}},
+    "color":{"value":"#0000FF"},
+    "shape":{"type":"circle"},
+    "opacity":{"value":0.4,"random":true},
+    "size":{"value":3,"random":true},
+    "line_linked":{"enable":true,"distance":150,"color":"#0000FF","opacity":0.2,"width":1},
+    "move":{"enable":true,"speed":1}
+  },
+  "retina_detect": true
+});
 
-    // 版权年份脚本（保留原功能）
-    const currentYear = new Date().getFullYear();
-    document.getElementById('copyright-text').innerHTML = `&copy; ${currentYear} Ming Li. All rights reserved.`; 
+$(window).scroll(function() {
+  $('.content-section').each(function() {
+    const sectionTop = $(this).offset().top;
+    const windowTop = $(window).scrollTop();
+    const windowHeight = $(window).height();
+    if (sectionTop < windowTop + windowHeight - 50) $(this).addClass('active');
+  });
+});
+
+$('.go-top').click(function(e) {
+  e.preventDefault();
+  $('html,body').animate({scrollTop:0},300);
+});
+
+document.getElementById('copyright-text').innerHTML =
+  `&copy; ${new Date().getFullYear()} Ming Li. All rights reserved.`;
+
+$(document).ready(()=> setTimeout(()=>$(window).trigger('scroll'),100));
 </script>
 </body>
 </html>
