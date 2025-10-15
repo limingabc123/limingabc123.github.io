@@ -98,23 +98,21 @@
 
 /* 返回顶部按钮核心样式 */
 .go-top {
-   position: fixed;        /* 固定在视口 */
-   top: 2px;           /* 距离底部 */
-   right: 20px;            /* 距离右侧 */
+   position: absolute;     /* 相对容器定位 */
+   bottom: 0;              /* 距离容器底部 */
+   right: 0;               /* 距离容器右侧 */
    background-color: #ccc; /* 背景色 */
    color: #333;            /* 文字色 */
    padding: 8px 12px;      /* 内边距 */
    border-radius: 4px;     /* 圆角 */
    text-decoration: none;  /* 去掉下划线 */
    transition: all 0.3s ease; /* 过渡动画 */
-   z-index: 100;           /* 确保层级在最上层 */
- }
+}
 
-/*  hover 时的交互效果 */
- .go-top:hover {
-   background-color: #aaa; /* 背景加深 */
-   transform: translateY(-3px); /* 轻微上移 */
- }
+.go-top:hover {
+   background-color: #aaa;
+   transform: translateY(-3px);
+}
 
   .copyright-black-box {
     background: #222;
@@ -233,7 +231,8 @@
 </div>
 
 
-<div class="go-top-container">
+<!-- 包裹返回顶部按钮的容器 -->
+<div class="go-top-container" style="position: relative;">
   <a href="#" class="go-top">Top</a>
 </div>
 
