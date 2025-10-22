@@ -1,172 +1,114 @@
-# from fastapi import FastAPI, HTTPException, Request
-# from fastapi.middleware.cors import CORSMiddleware
-# import httpx
+"""
+Ollama代理服务
+提供与Ollama模型的代理连接
+"""
 
-# # 初始化FastAPI应用
-# app = FastAPI(title="Ollama DeepSeek 代理API")
-
-# # 配置跨域（替换为你的GitHub Pages域名）
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["https://limingabc123.github.io"],  # 你的GitHub主页域名
-#     allow_credentials=True,
-#     allow_methods=["POST"],
-#     allow_headers=["Content-Type"],
-# )
-
-# # Ollama API地址与模型名称
-# OLLAMA_API_URL = "http://localhost:11434/api/chat"
-# MODEL_NAME = "deepseek-r1:7b"  # Ollama中运行的模型名称
+import os
+import json
+import requests
+from typing import Dict, Any, Optional
+from flask import Flask, request, jsonify, Response
 
 
-# @app.post("/chat")
-# async def chat(request: Request):
-#     try:
-#         # 解析前端请求数据
-#         data = await request.json()
-#         user_msg = data.get("message", "")
-#         chat_history = data.get("history", [])  # 格式: [(用户消息1, 助手回复1), ...]
-
-#         # 构造Ollama所需的messages格式
-#         ollama_msgs = []
-#         for u_msg, a_reply in chat_history:
-#             ollama_msgs.append({"role": "user", "content": u_msg})
-#             ollama_msgs.append({"role": "assistant", "content": a_reply})
-#         ollama_msgs.append({"role": "user", "content": user_msg})
-
-#         # 转发请求到Ollama
-#         async with httpx.AsyncClient() as client:
-#             response = await client.post(
-#                 OLLAMA_API_URL,
-#                 json={
-#                     "model": MODEL_NAME,
-#                     "messages": ollama_msgs,
-#                     "stream": False  # 关闭流式输出，简化前端处理
-#                 }
-#             )
-
-#         # 处理Ollama响应
-#         if response.status_code != 200:
-#             raise HTTPException(status_code=response.status_code, detail=response.text)
+class OllamaProxy:
+    """Ollama代理类"""
+    
+    def __init__(self, ollama_host: str = "localhost", ollama_port: int = 11434):
+        self.ollama_base_url = f"http://{ollama_host}:{ollama_port}"
+        self.app = Flask(__name__)
+        self._setup_routes()
+    
+    def _setup_routes(self):
+        """设置代理路由"""
         
-#         ollama_reply = response.json()["message"]["content"]
-#         new_history = chat_history + [(user_msg, ollama_reply)]
+        @self.app.route('/api/generate', methods=['POST'])
+        def generate():
+            """生成文本接口"""
+            try:
+                data = request.get_json()
+                model = data.get('model', 'qwen2.5:7b')
+                prompt = data.get('prompt', '')
+                stream = data.get('stream', False)
+                
+                # 转发到Ollama
+                ollama_response = self._call_ollama_generate(model, prompt, stream)
+                
+                if stream:
+                    return Response(ollama_response.iter_content(chunk_size=1024),
+                                  content_type='application/json')
+                else:
+                    return jsonify(ollama_response.json())
+                    
+            except Exception as e:
+                return jsonify({"error": str(e)}), 500
         
-#         return {"reply": ollama_reply, "history": new_history}
-
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
-
-
-# if __name__ == "__main__":
-#     import uvicorn
-#     uvicorn.run(app, host="0.0.0.0", port=8000)
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.middleware.cors import CORSMiddleware
-import httpx
-import logging
-
-# 配置日志
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-# 初始化FastAPI应用
-app = FastAPI(title="李茗的个人小助手API")
-
-# 配置跨域（允许GitHub Pages和本地开发访问）
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "https://limingabc123.github.io",  # GitHub Pages域名
-        "http://localhost:8000",           # 本地开发
-        "http://127.0.0.1:8000"            # 本地开发
-    ],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# Ollama API配置
-OLLAMA_API_URL = "http://localhost:11434/api/chat"
-MODEL_NAME = "deepseek-r1:7b"  # 确保Ollama中有这个模型
-
-@app.get("/")
-async def root():
-    """健康检查端点"""
-    return {"status": "running", "service": "李茗的个人小助手API"}
-
-@app.post("/chat")
-async def chat(request: Request):
-    """聊天接口 - 转发请求到本地Ollama服务"""
-    try:
-        # 解析前端请求
-        data = await request.json()
-        user_message = data.get("message", "").strip()
-        chat_history = data.get("history", [])
+        @self.app.route('/api/chat', methods=['POST'])
+        def chat():
+            """聊天接口"""
+            try:
+                data = request.get_json()
+                model = data.get('model', 'qwen2.5:7b')
+                messages = data.get('messages', [])
+                
+                # 转发到Ollama聊天接口
+                response = self._call_ollama_chat(model, messages)
+                return jsonify(response)
+                
+            except Exception as e:
+                return jsonify({"error": str(e)}), 500
         
-        # 验证输入
-        if not user_message:
-            raise HTTPException(status_code=400, detail="消息内容不能为空")
+        @self.app.route('/api/tags', methods=['GET'])
+        def list_models():
+            """获取模型列表"""
+            try:
+                response = requests.get(f"{self.ollama_base_url}/api/tags")
+                return jsonify(response.json())
+            except Exception as e:
+                return jsonify({"error": str(e)}), 500
         
-        logger.info(f"收到用户消息: {user_message[:50]}...")
-
-        # 构造Ollama消息格式
-        ollama_messages = []
-        for user_msg, assistant_reply in chat_history:
-            ollama_messages.append({"role": "user", "content": user_msg})
-            ollama_messages.append({"role": "assistant", "content": assistant_reply})
-        ollama_messages.append({"role": "user", "content": user_message})
-
-        # 转发请求到Ollama
-        async with httpx.AsyncClient(timeout=60.0) as client:
-            response = await client.post(
-                OLLAMA_API_URL,
-                json={
-                    "model": MODEL_NAME,
-                    "messages": ollama_messages,
-                    "stream": False,
-                    "options": {
-                        "temperature": 0.7,
-                        "top_p": 0.9,
-                        "num_predict": 512
-                    }
-                }
-            )
-
-        if response.status_code != 200:
-            error_detail = f"Ollama服务错误: {response.status_code} - {response.text}"
-            logger.error(error_detail)
-            raise HTTPException(status_code=500, detail=error_detail)
-
-        # 处理响应
-        ollama_response = response.json()
-        ollama_reply = ollama_response["message"]["content"]
-        
-        # 更新聊天历史
-        new_history = chat_history + [(user_message, ollama_reply)]
-        
-        logger.info(f"成功生成回复，长度: {len(ollama_reply)}")
-        return {
-            "reply": ollama_reply,
-            "history": new_history,
-            "status": "success"
+        @self.app.route('/api/health', methods=['GET'])
+        def health_check():
+            """健康检查"""
+            try:
+                response = requests.get(f"{self.ollama_base_url}/api/tags")
+                if response.status_code == 200:
+                    return jsonify({"status": "healthy", "ollama": "connected"})
+                else:
+                    return jsonify({"status": "unhealthy", "ollama": "disconnected"}), 503
+            except:
+                return jsonify({"status": "unhealthy", "ollama": "disconnected"}), 503
+    
+    def _call_ollama_generate(self, model: str, prompt: str, stream: bool = False):
+        """调用Ollama生成接口"""
+        url = f"{self.ollama_base_url}/api/generate"
+        payload = {
+            "model": model,
+            "prompt": prompt,
+            "stream": stream
         }
         
-    except httpx.ConnectError:
-        error_msg = "无法连接到Ollama服务，请确保Ollama已启动并在端口11434运行"
-        logger.error(error_msg)
-        raise HTTPException(status_code=503, detail=error_msg)
-    except httpx.TimeoutException:
-        error_msg = "Ollama服务响应超时，请稍后重试"
-        logger.error(error_msg)
-        raise HTTPException(status_code=504, detail=error_msg)
-    except Exception as e:
-        error_msg = f"服务器内部错误: {str(e)}"
-        logger.error(error_msg)
-        raise HTTPException(status_code=500, detail=error_msg)
+        response = requests.post(url, json=payload, stream=stream)
+        response.raise_for_status()
+        return response
+    
+    def _call_ollama_chat(self, model: str, messages: list):
+        """调用Ollama聊天接口"""
+        url = f"{self.ollama_base_url}/api/chat"
+        payload = {
+            "model": model,
+            "messages": messages,
+            "stream": False
+        }
+        
+        response = requests.post(url, json=payload)
+        response.raise_for_status()
+        return response.json()
+    
+    def run(self, host: str = "localhost", port: int = 8001, debug: bool = False):
+        """运行代理服务"""
+        self.app.run(host=host, port=port, debug=debug)
 
-# 启动服务
-if __name__ == "__main__":
-    import uvicorn
-    logger.info("启动李茗的个人小助手API服务...")
-    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="info")
+
+if __name__ == '__main__':
+    proxy = OllamaProxy()
+    proxy.run(debug=True)

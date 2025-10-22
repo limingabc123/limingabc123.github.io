@@ -1,112 +1,303 @@
-@import "./styles.css";
-
-
-:root{
-    --h-title-color:#02030A;
+/* 全局样式 */
+* {
+  margin: 0; padding: 0;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
 }
 
-.header {
-    border-bottom: solid 10px var(--bs-black);
-    z-index: 10000;
+body {
+  font-size: 16px;
+  font-family: "Palatino Linotype","Book Antiqua",Palatino,serif;
+  color: #333;
+  margin: 0 auto;
+  max-width: 1200px;
+  padding: 0 20px;
+  position: relative;
 }
 
-.bg-bottom {
-    background-color: var(--h-title-color);
+#particles-js {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: linear-gradient(135deg,#f7f7f7 0%,#e9ecef 100%);
+  z-index: -1; opacity: 0.7;
 }
 
-.top-section {
-    position: relative;
-    padding: 7rem 0;
-    background-position: center;
-    background-size: coer;
-    height: 0rem;
+a {
+  color: #0000FF; text-decoration: none; position: relative;
+}
+a:hover { color: #0000CC; }
+a::after {
+  content: ''; position: absolute; width: 0; height: 2px;
+  bottom: -2px; left: 0; background-color: #0000FF;
+  transition: width 0.3s ease;
+}
+a:hover::after { width: 100%; }
+
+.header-card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 15px 0;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+  position: relative; /* 为小助手容器提供相对定位上下文 */
+}
+.avatar, .logo {
+  border-radius: 8px; transition: transform 0.5s ease;
+}
+.avatar:hover, .logo:hover {
+  transform: scale(1.05);
 }
 
-.top-section h2 {
-    font-weight: 400;
+.nav-bar {
+  position: sticky; top: 0;
+  background: rgba(255,255,255,0.95);
+  padding: 10px 25px;
+  border-radius: 8px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+  margin: 8px 0;
+  text-align: left;
+  z-index: 10;
+}
+.nav-bar a {
+  margin: 0 10px;
+  font-weight: bold;
+  font-size: 17px;
+  color: #000000;
+}
+.nav-bar a:hover {
+  transform: translateY(-2px);
+  color: #0000CC;
 }
 
-.top-section .top-section-content {
-    position: relative;
-    z-index: 1;
+.section-title {
+  font-size: 22px; color: #0000CC;
+  margin: 15px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid #0000FF;
 }
 
-.top-section:before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+.content-card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 18px 25px;
+  margin: 10px 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
 }
 
-section header h2{
-    font-family: "Kanit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
-    color: var(--h-title-color);
-    font-size: 2.3rem;
-    line-height: 4rem;
+/* 返回顶部按钮样式 */
+.go-top-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
 }
 
-section .main-body{
-    font-size: 1.3rem;
-    font-weight: 200;
-    line-height: 2.4rem;
+.go-top {
+  display: block;
+  width: 40px;
+  height: 40px;
+  background: #0000FF;
+  color: white;
+  text-align: center;
+  line-height: 40px;
+  border-radius: 50%;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: bold;
+  box-shadow: 0 2px 10px rgba(0,0,255,0.3);
+  transition: all 0.3s ease;
 }
 
-
-.bg-gradient-primary-to-secondary-light {
-    background: linear-gradient(45deg, #fcfcfc, #ffffff) !important;
+.go-top:hover {
+  background: #0000CC;
+  transform: scale(1.1);
+  box-shadow: 0 4px 15px rgba(0,0,255,0.5);
 }
 
-.bg-gradient-primary-to-secondary-gray {
-    background: linear-gradient(45deg, #f0f0f0, #f1f1f1) !important;
+.copyright-black-box {
+  background: #222;
+  color: #fff; text-align: center;
+  padding: 20px 0; margin: 25px auto 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0,0,255,0.2);
+}
+.copyright-black-box a {
+  color: #fff; margin: 0 8px;
+}
+.copyright-black-box a:hover { color: #81d4fa; }
+
+.content-section {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.content-section.active { opacity: 1; transform: translateY(0); }
+
+/* 聊天窗口专属样式（与页面风格统一：蓝色系、圆角、阴影） */
+#chat-widget {
+  position: fixed; 
+  bottom: 80px; 
+  right: 20px; 
+  width: 350px; 
+  border: 1px solid #ddd; 
+  border-radius: 12px; 
+  overflow: hidden; 
+  background: white; 
+  box-shadow: 0 3px 8px rgba(0,0,0,0.05); 
+  display: none; 
+  z-index: 20;
+  cursor: move; /* 显示可拖动光标 */
+  user-select: none; /* 防止拖动时选中文本 */
+}
+#chat-widget .chat-header {
+  padding: 12px; 
+  background: #0000FF; 
+  color: white; 
+  font-weight: bold; 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center;
+  cursor: move; /* 头部可拖动 */
 }
 
-
-
-.on-top {
-    position: relative;
-    z-index: 10000;
+/* 拖动时的样式 */
+#chat-widget.dragging {
+  opacity: 0.8;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  transition: none; /* 拖动时禁用过渡效果 */
+}
+#chat-widget .chat-header button {
+  border: none; 
+  background: none; 
+  cursor: pointer; 
+  color: white; 
+  font-size: 18px;
+}
+#chat-history {
+  height: 400px; 
+  overflow-y: auto; 
+  padding: 12px; 
+  gap: 10px; 
+  display: flex; 
+  flex-direction: column;
+}
+#chat-input-area {
+  padding: 12px; 
+  border-top: 1px solid #ddd; 
+  display: flex; 
+  gap: 8px;
+}
+#user-input {
+  flex: 1; 
+  padding: 8px 12px; 
+  border: 1px solid #ddd; 
+  border-radius: 8px; 
+  font-family: "Palatino Linotype",serif;
+}
+#send-btn {
+  padding: 8px 16px; 
+  background: #0000FF; 
+  color: white; 
+  border: none; 
+  border-radius: 8px; 
+  cursor: pointer; 
+  transition: all 0.3s ease;
+}
+#send-btn:hover {
+  background: #0000CC;
 }
 
-.top-bg {
-    background-position: center;
-    background-size: fill;
-    width: 100%;
-    height: 100%;
+/* 小助手容器样式 - 放在页眉模块的右下角 */
+.assistant-container {
+  position: absolute;
+  bottom: -80px;
+  right: 20px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
 }
 
-.top-bg::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.4);
+.assistant-label {
+  background: rgba(0, 0, 255, 0.8);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  box-shadow: 0 2px 8px rgba(0,0,255,0.3);
+  white-space: nowrap;
+  transition: all 0.3s ease;
 }
 
-
-#avatar {
-    position: relative;
-    height: 0;
-    top:min(-65px,max(-100px,calc(-1*100vw/12)));
-    max-width: 55em;
-    margin: 0 1.5rem 0 0;
-    float: right;
-    z-index: 9000;
+#open-chat {
+  width: 60px; 
+  height: 60px; 
+  border-radius: 50%; 
+  background: transparent; 
+  border: none; 
+  cursor: pointer; 
+  box-shadow: 0 2px 15px rgba(0,0,255,0.4); 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
-#avatar img {
-    height: max(130px,min(200px,calc(100vw/6)));
-    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
+#open-chat img {
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+  border-radius: 50%;
 }
 
-@media screen and (max-width: 991px) {
-    #avatar {
-        margin: 0;
-    }
+#open-chat:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 20px rgba(0,0,255,0.6);
 }
 
+/* 飞行动画样式 */
+@keyframes floatAnimation {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(20px, -15px) rotate(5deg);
+  }
+  50% {
+    transform: translate(-15px, 10px) rotate(-3deg);
+  }
+  75% {
+    transform: translate(10px, -20px) rotate(2deg);
+  }
+}
 
+.floating {
+  animation: floatAnimation 8s ease-in-out infinite;
+}
+
+.chat-message {
+  max-width: 80%; 
+  padding: 10px 12px; 
+  border-radius: 8px;
+}
+.user-message {
+  align-self: flex-end; 
+  background: #0000FF; 
+  color: white;
+}
+.assistant-message {
+  align-self: flex-start; 
+  background: #f5f5f5; 
+  color: #333;
+}
+.loading-message {
+  align-self: flex-start; 
+  padding: 10px 12px; 
+  color: #666;
+}

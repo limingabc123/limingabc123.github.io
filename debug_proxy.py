@@ -1,54 +1,148 @@
-#!/usr/bin/env python3
 """
-详细调试代理服务
+调试代理服务
+提供调试和监控功能的代理服务
 """
 
-import urllib.request
 import json
-import urllib.error
+import logging
+import time
+from flask import Flask, request, jsonify
+import requests
 
-def debug_proxy():
-    """详细调试代理服务"""
-    try:
-        # 构造测试请求
-        test_data = {
-            "message": "你好，请简单介绍一下你自己",
-            "history": []
-        }
+# 配置日志
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('debug_proxy.log'),
+        logging.StreamHandler()
+    ]
+)
+
+logger = logging.getLogger(__name__)
+
+class DebugProxy:
+    """调试代理类，提供详细的调试信息"""
+    
+    def __init__(self, target_url="http://localhost:11434"):
+        self.target_url = target_url
+        self.app = Flask(__name__)
+        self.request_count = 0
+        self.error_count = 0
+        self.response_times = []
         
-        print("正在测试代理服务...")
+        # 设置路由
+        self.setup_routes()
+    
+    def setup_routes(self):
+        """设置Flask路由"""
         
-        # 发送请求到代理服务
-        req = urllib.request.Request(
-            "http://localhost:8000/chat",
-            data=json.dumps(test_data).encode('utf-8'),
-            headers={'Content-Type': 'application/json'}
-        )
-        
-        print("发送请求到代理服务...")
-        
-        try:
-            with urllib.request.urlopen(req, timeout=30) as response:
-                print(f"收到响应，状态码: {response.status}")
-                result = json.loads(response.read().decode('utf-8'))
-                print("✅ 代理服务测试成功！")
-                print(f"状态: {result.get('status', 'unknown')}")
-                print(f"回复长度: {len(result.get('reply', ''))} 字符")
-                print(f"回复预览: {result.get('reply', '')[:100]}...")
+        @self.app.route('/api/debug/chat', methods=['POST'])
+        def debug_chat():
+            """调试聊天接口"""
+            start_time = time.time()
+            self.request_count += 1
+            
+            try:
+                # 记录请求信息
+                request_data = request.get_json()
+                logger.info(f"收到调试请求: {json.dumps(request_data, ensure_ascii=False)}")
                 
-        except urllib.error.HTTPError as e:
-            print(f"❌ HTTP错误: {e.code} - {e.reason}")
-            print(f"错误详情: {e.read().decode('utf-8')}")
+                # 转发到目标服务
+                response = requests.post(
+                    f"{self.target_url}/api/chat",
+                    json=request_data,
+                    timeout=30
+                )
+                
+                # 计算响应时间
+                response_time = time.time() - start_time
+                self.response_times.append(response_time)
+                
+                # 记录响应信息
+                logger.info(f"请求完成 - 响应时间: {response_time:.2f}s - 状态码: {response.status_code}")
+                
+                return jsonify({
+                    "success": True,
+                    "response": response.json(),
+                    "debug_info": {
+                        "request_id": self.request_count,
+                        "response_time": response_time,
+                        "target_url": self.target_url,
+                        "timestamp": time.time()
+                    }
+                })
+                
+            except Exception as e:
+                self.error_count += 1
+                logger.error(f"调试请求失败: {str(e)}")
+                return jsonify({
+                    "success": False,
+                    "error": str(e),
+                    "debug_info": {
+                        "request_id": self.request_count,
+                        "error_count": self.error_count,
+                        "timestamp": time.time()
+                    }
+                }), 500
+        
+        @self.app.route('/api/debug/stats', methods=['GET'])
+        def get_stats():
+            """获取统计信息"""
+            stats = {
+                "request_count": self.request_count,
+                "error_count": self.error_count,
+                "average_response_time": sum(self.response_times) / len(self.response_times) if self.response_times else 0,
+                "max_response_time": max(self.response_times) if self.response_times else 0,
+                "min_response_time": min(self.response_times) if self.response_times else 0,
+                "target_url": self.target_url,
+                "timestamp": time.time()
+            }
+            return jsonify(stats)
+        
+        @self.app.route('/api/debug/logs', methods=['GET'])
+        def get_logs():
+            """获取最近的日志（简化版本）"""
+            logs = {
+                "recent_requests": self.request_count,
+                "recent_errors": self.error_count,
+                "status": "running"
+            }
+            return jsonify(logs)
+        
+        @self.app.route('/api/debug/health', methods=['GET'])
+        def health_check():
+            """健康检查"""
+            try:
+                # 检查目标服务是否可用
+                response = requests.get(f"{self.target_url}/api/tags", timeout=5)
+                target_status = "healthy" if response.status_code == 200 else "unhealthy"
+            except:
+                target_status = "unreachable"
             
-        except urllib.error.URLError as e:
-            print(f"❌ URL错误: {e.reason}")
-            
-    except Exception as e:
-        print(f"❌ 代理服务测试失败: {str(e)}")
-        print("请检查:")
-        print("1. 代理服务是否正在运行 (端口8000)")
-        print("2. Ollama服务是否正在运行 (端口11434)")
-        print("3. 网络连接是否正常")
+            return jsonify({
+                "status": "healthy",
+                "debug_proxy": {
+                    "request_count": self.request_count,
+                    "error_count": self.error_count,
+                    "uptime": "running"
+                },
+                "target_service": {
+                    "status": target_status,
+                    "url": self.target_url
+                }
+            })
+    
+    def run(self, host='0.0.0.0', port=5003, debug=True):
+        """运行调试代理服务"""
+        logger.info(f"启动调试代理服务在 {host}:{port}")
+        logger.info(f"目标服务: {self.target_url}")
+        self.app.run(host=host, port=port, debug=debug)
 
-if __name__ == "__main__":
-    debug_proxy()
+def main():
+    """主函数"""
+    proxy = DebugProxy()
+    proxy.run()
+
+if __name__ == '__main__':
+    main()

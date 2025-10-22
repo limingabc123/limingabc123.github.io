@@ -46,6 +46,7 @@
     padding: 20px;
     margin: 15px 0;
     box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+    position: relative; /* 为小助手容器提供相对定位上下文 */
   }
   .avatar, .logo {
     border-radius: 8px; transition: transform 0.5s ease;
@@ -91,55 +92,34 @@
     box-shadow: 0 1px 4px rgba(0,0,0,0.05);
   }
 
-/* 返回顶部按钮容器：固定定位 */
+/* 返回顶部按钮样式 */
 .go-top-container {
-  position: fixed; /* 改为固定定位 */
-  bottom: 100px;      /* 距离页面底部100px */
-  right: 20px;        /* 距离页面右侧20px */
-  z-index: 9999;      /* 层级最高，避免被遮挡 */
-  opacity: 0.9;       /* 默认半透明，若隐若现 */
-  transition: all 0.3s ease; /* 悬浮/显示过渡效果 */
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
 }
 
-/* 按钮整体样式：文字+箭头垂直排列 */
 .go-top {
-  display: flex;
-  flex-direction: column; /* 垂直排列（箭头在上，Top在下） */
-  align-items: center;    /* 水平居中 */
-  text-decoration: none;  /* 去除链接下划线 */
-  color: #fff;            /* 文字颜色：白色 */
-  background-color: #000; /* 按钮背景：黑色 */
-  padding: 6px 10px;      /* 内边距，控制按钮大小 */
-  border-radius: 4px;     /* 圆角，增强柔和感 */
-  font-size: 14px;        /* 文字大小 */
-  transition: color 0.2s ease, border-color 0.2s ease; /* 颜色过渡更平滑 */
+  display: block;
+  width: 40px;
+  height: 40px;
+  background: #0000FF;
+  color: white;
+  text-align: center;
+  line-height: 40px;
+  border-radius: 50%;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: bold;
+  box-shadow: 0 2px 10px rgba(0,0,255,0.3);
+  transition: all 0.3s ease;
 }
 
-/* 上三角箭头：通过CSS边框生成 */
-.go-top .arrow {
-  display: inline-block;
-  width: 0;
-  height: 0;
-  /* 左右边框透明，下边框为白色 → 形成“上三角” */
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-bottom: 5px solid #fff; /* 箭头颜色：白色 */
-  margin-bottom: 2px; /* 箭头与Top文字的间距 */
-}
-
-/* 鼠标悬浮效果：增强可见性 */
-.go-top-container:hover {
-  opacity: 1;           /* 完全不透明 */
-  transform: scale(1.1);/* 轻微放大，提示可点击 */
-}
-
-/* 点击（活跃）状态：文字和箭头变蓝色 */
-.go-top:active {
-  color: #868d94; /* 文字变蓝色 */
-}
-
-.go-top:active .arrow {
-  border-bottom-color: #949aa0; /* 箭头变蓝色 */
+.go-top:hover {
+  background: #0000CC;
+  transform: scale(1.1);
+  box-shadow: 0 4px 15px rgba(0,0,255,0.5);
 }
 
 
@@ -235,12 +215,11 @@
   #send-btn:hover {
     background: #0000CC;
   }
-  /* 小助手容器样式 */
+  /* 小助手容器样式 - 放在页眉模块的右下角 */
   .assistant-container {
-    position: fixed;
+    position: absolute;
+    bottom: -80px;
     right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
     z-index: 20;
     display: flex;
     flex-direction: column;
@@ -359,6 +338,7 @@
       <img src="static/assets/img/xidian.png" width="188" alt="Xidian University Logo" class="logo">
     </div>
   </div>
+  
 </div>
 
 
@@ -428,10 +408,7 @@
 
 <!-- 包裹返回顶部按钮的容器 -->
 <div class="go-top-container">
-  <a href="#" class="go-top">
-    Top
-    <span class="arrow"></span> <!-- 新增箭头元素 -->
-  </a>
+  <a href="#" class="go-top">Top</a>
 </div>
 
 
@@ -451,13 +428,18 @@
   </div>
   <div id="chat-history"></div>
   <div id="chat-input-area">
-    <input type="text" id="user-input" placeholder="input your message here..."></">
+    <input type="text" id="user-input" placeholder="input your message here...">
     <button id="send-btn">Send</button>
   </div>
 </div>
-        <button id="open-chat" class="floating">
-          <img src="static/assets/img/zhuli.png" alt="小助手">
-        </button>
+
+<!-- 小助手容器 - 放在页眉模块的右下角 -->
+<div class="assistant-container">
+  <div class="assistant-label">小助手</div>
+  <button id="open-chat" class="floating">
+    <img src="static/assets/img/zhuli.png" alt="小助手">
+  </button>
+</div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
@@ -483,9 +465,10 @@ $(window).scroll(function() {
   });
 });
 
-$('.go-top').click(function(e) {
+// 修复返回顶部按钮功能
+$(document).on('click', '.go-top', function(e) {
   e.preventDefault();
-  $('html,body').animate({scrollTop:0},300);
+  $('html, body').animate({scrollTop: 0}, 300);
 });
 
 document.getElementById('copyright-text').innerHTML =

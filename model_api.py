@@ -1,76 +1,84 @@
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from transformers import AutoTokenizer, AutoModelForCausalLM
-import torch
+"""
+模型API主文件
+提供模型小助理的核心API功能
+"""
 
-# 1. 初始化API应用
-app = FastAPI(title="DeepSeek 7B 聊天API")
+import os
+import json
+import requests
+from flask import Flask, request, jsonify
+from typing import Dict, Any, Optional
 
-# 2. 关键：配置跨域（允许GitHub Pages域名访问，解决浏览器拦截）
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["https://limingabc123.github.io"],  # 你的GitHub主页域名
-    allow_credentials=True,  # 允许携带Cookie（多轮对话可能需要）
-    allow_methods=["POST"],  # 仅开放POST请求（聊天用）
-    allow_headers=["Content-Type"],  # 允许JSON格式请求
-)
 
-# 3. 加载本地DeepSeek模型（替换为你的模型实际路径）
-#model_path = "./deepseek-llm-7b-chat"  # 本地模型文件夹路径
-model_path = "C:\Users\dell\.ollama\models\manifests\registry.ollama.ai\library\deepseek-r1"  # Hugging Face模型名称
-tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
-model = AutoModelForCausalLM.from_pretrained(
-    model_path,
-    trust_remote_code=True,
-    torch_dtype=torch.float16,  # 7B模型用float16节省显存（需GPU支持）
-    device_map="auto",  # 自动分配GPU/CPU
-    load_in_4bit=False  # 若显存不足，可改为True（需安装bitsandbytes）
-)
-model.eval()  # 推理模式，关闭训练层
-
-# 4. 定义请求/响应格式（多轮对话需传历史记录）
-class ChatRequest(BaseModel):
-    message: str  # 用户输入消息
-    history: list = []  # 聊天历史（格式：[(用户消息1, 助手回复1), ...]）
-
-# 5. 核心聊天接口（前端调用此地址）
-@app.post("/chat")
-async def chat(request: ChatRequest):
-    try:
-        # 构造DeepSeek格式的输入（含历史对话）
-        inputs = tokenizer.build_chat_input(
-            request.message,
-            history=request.history,
-            tokenize=True,
-            return_tensors="pt"
-        ).to(model.device)
+class ModelAPI:
+    """模型API类"""
+    
+    def __init__(self, host: str = "localhost", port: int = 8000):
+        self.host = host
+        self.port = port
+        self.base_url = f"http://{host}:{port}"
+        self.app = Flask(__name__)
+        self._setup_routes()
+    
+    def _setup_routes(self):
+        """设置API路由"""
         
-        # 生成回复（控制长度和随机性，适配7B模型）
-        with torch.no_grad():  # 禁用梯度计算，节省显存
-            outputs = model.generate(
-                **inputs,
-                max_new_tokens=512,  # 最大回复长度
-                temperature=0.7,     # 随机性（0.5-0.8较合适）
-                do_sample=True,
-                pad_token_id=tokenizer.eos_token_id  # 避免警告
-            )
+        @self.app.route('/api/chat', methods=['POST'])
+        def chat():
+            """聊天接口"""
+            try:
+                data = request.get_json()
+                prompt = data.get('prompt', '')
+                model = data.get('model', 'qwen2.5:7b')
+                
+                # 调用模型生成响应
+                response = self.generate_response(prompt, model)
+                
+                return jsonify({
+                    "response": response,
+                    "model": model,
+                    "timestamp": "2024-01-01T00:00:00Z"
+                })
+            except Exception as e:
+                return jsonify({"error": str(e)}), 500
         
-        # 解码回复（去掉输入部分，只保留新生成内容）
-        reply = tokenizer.decode(
-            outputs[0][len(inputs["input_ids"][0]):],
-            skip_special_tokens=True
-        )
+        @self.app.route('/api/models', methods=['GET'])
+        def list_models():
+            """获取可用模型列表"""
+            models = [
+                {"name": "qwen2.5:7b", "size": "7B", "description": "通义千问2.5 7B模型"},
+                {"name": "llama3.1:8b", "size": "8B", "description": "Llama 3.1 8B模型"},
+                {"name": "gemma2:9b", "size": "9B", "description": "Gemma 2 9B模型"}
+            ]
+            return jsonify({"models": models})
         
-        # 返回回复和更新后的历史
-        return {
-            "reply": reply,
-            "history": request.history + [(request.message, reply)]
+        @self.app.route('/api/health', methods=['GET'])
+        def health_check():
+            """健康检查接口"""
+            return jsonify({
+                "status": "healthy",
+                "timestamp": "2024-01-01T00:00:00Z",
+                "version": "1.0.0"
+            })
+    
+    def generate_response(self, prompt: str, model: str) -> str:
+        """生成模型响应"""
+        # 这里应该调用实际的模型服务
+        # 目前返回模拟响应
+        responses = {
+            "qwen2.5:7b": f"我是通义千问助手，您说：{prompt}",
+            "llama3.1:8b": f"我是Llama助手，您说：{prompt}",
+            "gemma2:9b": f"我是Gemma助手，您说：{prompt}"
         }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"模型调用失败：{str(e)}")
+        return responses.get(model, f"默认响应：{prompt}")
+    
+    def run(self, debug: bool = False, host: str = None, port: int = None):
+        """运行API服务"""
+        run_host = host or self.host
+        run_port = port or self.port
+        self.app.run(host=run_host, port=run_port, debug=debug)
 
-# 6. 启动服务（终端运行此脚本）
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="info")
+
+if __name__ == '__main__':
+    api = ModelAPI()
+    api.run(debug=True)

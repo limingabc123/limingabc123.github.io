@@ -1,136 +1,89 @@
-#!/usr/bin/env python3
 """
-李茗个人小助手 - 简化版代理服务
-不需要安装外部依赖，使用标准库
+简单代理服务
+提供简化的模型代理功能
 """
 
-import http.server
-import socketserver
+import os
 import json
-import urllib.request
-import urllib.parse
+import requests
+from flask import Flask, request, jsonify
+from typing import Dict, Any
 
-class ChatProxyHandler(http.server.BaseHTTPRequestHandler):
+
+class SimpleProxy:
+    """简单代理类"""
     
-    def do_OPTIONS(self):
-        """处理预检请求"""
-        self.send_response(200)
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
-        self.end_headers()
+    def __init__(self):
+        self.app = Flask(__name__)
+        self._setup_routes()
+        self.model_responses = {
+            "qwen2.5:7b": "我是通义千问助手，很高兴为您服务！",
+            "llama3.1:8b": "我是Llama助手，有什么可以帮助您的吗？",
+            "gemma2:9b": "我是Gemma助手，随时为您提供帮助！"
+        }
     
-    def do_POST(self):
-        """处理聊天请求"""
-        if self.path != '/chat':
-            self.send_error(404)
-            return
-            
-        try:
-            # 读取请求数据
-            content_length = int(self.headers['Content-Length'])
-            post_data = self.rfile.read(content_length)
-            request_data = json.loads(post_data.decode('utf-8'))
-            
-            user_message = request_data.get('message', '')
-            chat_history = request_data.get('history', [])
-            
-            print(f"收到用户消息: {user_message[:50]}...")
-            
-            # 构造Ollama请求
-            ollama_messages = []
-            for user_msg, assistant_reply in chat_history:
-                ollama_messages.append({"role": "user", "content": user_msg})
-                ollama_messages.append({"role": "assistant", "content": assistant_reply})
-            ollama_messages.append({"role": "user", "content": user_message})
-            
-            ollama_request = {
-                "model": "deepseek-r1:7b",  # 使用deepseek-7b模型
-                "messages": ollama_messages,
-                "stream": False,
-                "options": {
-                    "temperature": 0.7,  # 适当温度保持创造性
-                    "top_p": 0.9,       # 标准top_p设置
-                    "num_predict": 512, # 增加生成长度以获得更完整回答
-                    "num_thread": 8,    # 使用更多线程加速推理
-                    "repeat_penalty": 1.1  # 标准重复惩罚
-                }
-            }
-            
-            print("正在向Ollama发送请求...")
-            
-            # 发送请求到Ollama
-            ollama_url = "http://localhost:11434/api/chat"
-            req = urllib.request.Request(
-                ollama_url,
-                data=json.dumps(ollama_request).encode('utf-8'),
-                headers={'Content-Type': 'application/json'}
-            )
-            
+    def _setup_routes(self):
+        """设置路由"""
+        
+        @self.app.route('/api/simple/chat', methods=['POST'])
+        def simple_chat():
+            """简化聊天接口"""
             try:
-                with urllib.request.urlopen(req, timeout=60) as response:
-                    ollama_response = json.loads(response.read().decode('utf-8'))
-                    ollama_reply = ollama_response["message"]["content"]
-                    
-                    # 构造响应
-                    response_data = {
-                        "reply": ollama_reply,
-                        "history": chat_history + [(user_message, ollama_reply)],
-                        "status": "success"
-                    }
-                    
-                    self.send_response(200)
-                    self.send_header('Content-Type', 'application/json')
-                    self.send_header('Access-Control-Allow-Origin', '*')
-                    self.end_headers()
-                    self.wfile.write(json.dumps(response_data).encode('utf-8'))
-                    
-                    print(f"成功生成回复，长度: {len(ollama_reply)}")
-                    
-            except urllib.error.URLError as e:
-                error_msg = f"无法连接到Ollama服务: {str(e)}"
-                print(f"Ollama连接错误: {error_msg}")
+                data = request.get_json()
+                prompt = data.get('prompt', '')
+                model = data.get('model', 'qwen2.5:7b')
                 
-                error_response = {
-                    "reply": "无法连接到AI服务，请确保Ollama服务正在运行",
-                    "history": chat_history,
-                    "status": "error"
-                }
+                # 生成简单响应
+                response = self._generate_simple_response(prompt, model)
                 
-                self.send_response(503)
-                self.send_header('Content-Type', 'application/json')
-                self.send_header('Access-Control-Allow-Origin', '*')
-                self.end_headers()
-                self.wfile.write(json.dumps(error_response).encode('utf-8'))
-                
-        except Exception as e:
-            error_msg = f"处理请求时出错: {str(e)}"
-            print(f"代理服务错误: {error_msg}")
-            
-            error_response = {
-                "reply": f"抱歉，服务暂时不可用: {str(e)}",
-                "history": chat_history,
-                "status": "error"
-            }
-            
-            self.send_response(500)
-            self.send_header('Content-Type', 'application/json')
-            self.send_header('Access-Control-Allow-Origin', '*')
-            self.end_headers()
-            self.wfile.write(json.dumps(error_response).encode('utf-8'))
+                return jsonify({
+                    "response": response,
+                    "model": model,
+                    "success": True
+                })
+            except Exception as e:
+                return jsonify({
+                    "error": str(e),
+                    "success": False
+                }), 500
+        
+        @self.app.route('/api/simple/info', methods=['GET'])
+        def simple_info():
+            """获取服务信息"""
+            return jsonify({
+                "service": "Simple Proxy",
+                "version": "1.0.0",
+                "models": list(self.model_responses.keys()),
+                "status": "running"
+            })
+        
+        @self.app.route('/api/simple/health', methods=['GET'])
+        def simple_health():
+            """健康检查"""
+            return jsonify({"status": "healthy"})
+    
+    def _generate_simple_response(self, prompt: str, model: str) -> str:
+        """生成简单响应"""
+        base_response = self.model_responses.get(
+            model, 
+            "我是AI助手，很高兴为您服务！"
+        )
+        
+        # 根据提示词生成不同的响应
+        if "你好" in prompt or "hello" in prompt.lower():
+            return f"{base_response} 您好！"
+        elif "帮助" in prompt or "help" in prompt.lower():
+            return f"{base_response} 我可以回答问题、提供信息等。"
+        elif "天气" in prompt:
+            return f"{base_response} 我无法获取实时天气信息。"
+        else:
+            return f"{base_response} 您说：{prompt}"
+    
+    def run(self, host: str = "localhost", port: int = 8002, debug: bool = False):
+        """运行服务"""
+        self.app.run(host=host, port=port, debug=debug)
 
-def run_server():
-    """启动代理服务器"""
-    PORT = 8000
-    with socketserver.TCPServer(("", PORT), ChatProxyHandler) as httpd:
-        print(f"李茗个人小助手代理服务已启动")
-        print(f"服务地址: http://localhost:{PORT}")
-        print(f"Ollama地址: http://localhost:11434")
-        print("按 Ctrl+C 停止服务")
-        try:
-            httpd.serve_forever()
-        except KeyboardInterrupt:
-            print("\n服务已停止")
 
-if __name__ == "__main__":
-    run_server()
+if __name__ == '__main__':
+    proxy = SimpleProxy()
+    proxy.run(debug=True)
