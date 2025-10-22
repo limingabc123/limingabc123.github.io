@@ -8,7 +8,7 @@
 # A simple Github Pages template for personal academic websites.
 
 ## Preview
-[![Screenshot of the Website](https://raw.githubusercontent.com/senli1073/senli1073.github.io/main/screenshot_full.png)](https://senli1073.github.io/)
+[![Screenshot of the Website](https://raw.githubusercontent.com/senli1073/limingabc123.github.io/static/assets/Yangshi.jpg)](https://limingABC23.github.io/)
 
 
 ## Introduction
