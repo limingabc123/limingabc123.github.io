@@ -443,6 +443,8 @@ const $sendBtn = $("#send-btn");
 $openChatBtn.click(() => {
   $chatWidget.fadeIn(300);
   $openChatBtn.fadeOut(300);
+  // 打开窗口后自动聚焦输入框
+  setTimeout(() => $userInput.focus(), 350);
 });
 $closeChatBtn.click(() => {
   $chatWidget.fadeOut(300);
@@ -452,7 +454,11 @@ $closeChatBtn.click(() => {
 // 发送消息核心函数
 async function sendMessage() {
   const userMsg = $userInput.val().trim();
-  if (!userMsg) return;
+  if (!userMsg) {
+    alert("请输入问题内容！");
+    $userInput.focus();
+    return;
+  }
 
   // 清空输入框，添加用户消息到UI
   $userInput.val("");
@@ -470,7 +476,14 @@ async function sendMessage() {
       credentials: "include" // 允许跨域携带凭证（多轮对话需要）
     });
 
-    if (!response.ok) throw new Error("请先在本地启动Ollama和中间代理脚本～");
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error("无法连接到AI服务，请确保本地Ollama和代理服务已启动");
+      } else {
+        throw new Error(`服务器错误: ${response.status}`);
+      }
+    }
+    
     const data = await response.json();
 
     // 更新对话历史，添加助手回复到UI
@@ -481,6 +494,9 @@ async function sendMessage() {
     removeLoadingFromUI(loadingId);
     addMessageToUI("assistant", `提示：${err.message}`);
   }
+  
+  // 发送后重新聚焦输入框
+  setTimeout(() => $userInput.focus(), 100);
 }
 
 // 辅助：添加消息到UI
@@ -509,6 +525,16 @@ function removeLoadingFromUI(loadingId) {
 $sendBtn.click(sendMessage);
 $userInput.keydown((e) => {
   if (e.key === "Enter") sendMessage();
+});
+
+// 初始化聊天窗口
+$(document).ready(() => {
+  // 添加欢迎消息
+  setTimeout(() => {
+    if ($chatHistory.children().length === 0) {
+      addMessageToUI("assistant", "你好！我是李茗的个人小助理，有什么可以帮助你的吗？");
+    }
+  }, 1000);
 });
 </script>
 </body>
