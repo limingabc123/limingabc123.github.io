@@ -336,26 +336,12 @@ $userInput.keydown((e) => {
   if (e.key === "Enter") sendMessage();
 });
 
-// 小助手随机飞行动画
+// 小助手轻微浮动动画（不影响按钮功能）
 function startFloatingAnimation() {
   const $assistant = $("#open-chat");
-  const windowWidth = $(window).width();
-  const windowHeight = $(window).height();
-  const assistantWidth = $assistant.outerWidth();
-  const assistantHeight = $assistant.outerHeight();
   
-  // 随机生成新位置
-  const randomX = Math.random() * (windowWidth - assistantWidth);
-  const randomY = Math.random() * (windowHeight - assistantHeight);
-  
-  // 平滑移动到新位置
-  $assistant.animate({
-    left: randomX + 'px',
-    top: randomY + 'px'
-  }, 8000, 'easeInOutCubic', function() {
-    // 动画完成后重新开始
-    startFloatingAnimation();
-  });
+  // 使用CSS动画而不是jQuery动画，避免覆盖位置
+  $assistant.addClass('floating');
 }
 
 // 初始化聊天窗口

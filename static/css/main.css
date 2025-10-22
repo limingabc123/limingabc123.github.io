@@ -212,7 +212,7 @@ a:hover::after { width: 100%; }
 /* 小助手容器样式 - 放在页眉模块的右下角 */
 .assistant-container {
   position: absolute;
-  bottom: 150px;
+  bottom: -40px;  /* 上移40px，避免与返回顶部按钮重叠 */
   right: 20px;
   z-index: 20;
   display: flex;
