@@ -161,108 +161,6 @@
     transition: opacity 0.6s ease, transform 0.6s ease;
   }
   .content-section.active { opacity: 1; transform: translateY(0); }
-
-  /* 聊天窗口专属样式（与页面风格统一：蓝色系、圆角、阴影） */
-  #chat-widget {
-    position: fixed; 
-    bottom: 80px; 
-    right: 20px; 
-    width: 350px; 
-    border: 1px solid #ddd; 
-    border-radius: 12px; 
-    overflow: hidden; 
-    background: white; 
-    box-shadow: 0 3px 8px rgba(0,0,0,0.05); 
-    display: none; 
-    z-index: 20;
-  }
-  #chat-widget .chat-header {
-    padding: 12px; 
-    background: #0000FF; 
-    color: white; 
-    font-weight: bold; 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center;
-  }
-  #chat-widget .chat-header button {
-    border: none; 
-    background: none; 
-    cursor: pointer; 
-    color: white; 
-    font-size: 18px;
-  }
-  #chat-history {
-    height: 400px; 
-    overflow-y: auto; 
-    padding: 12px; 
-    gap: 10px; 
-    display: flex; 
-    flex-direction: column;
-  }
-  #chat-input-area {
-    padding: 12px; 
-    border-top: 1px solid #ddd; 
-    display: flex; 
-    gap: 8px;
-  }
-  #user-input {
-    flex: 1; 
-    padding: 8px 12px; 
-    border: 1px solid #ddd; 
-    border-radius: 8px; 
-    font-family: "Palatino Linotype",serif;
-  }
-  #send-btn {
-    padding: 8px 16px; 
-    background: #0000FF; 
-    color: white; 
-    border: none; 
-    border-radius: 8px; 
-    cursor: pointer; 
-    transition: all 0.3s ease;
-  }
-  #send-btn:hover {
-    background: #0000CC;
-  }
-  #open-chat {
-    position: fixed; 
-    bottom: 20px; 
-    right: 20px; 
-    width: 50px; 
-    height: 50px; 
-    border-radius: 50%; 
-    background: #0000FF; 
-    color: white; 
-    border: none; 
-    cursor: pointer; 
-    box-shadow: 0 2px 10px rgba(0,0,255,0.3); 
-    z-index: 20; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    font-weight: bold;
-  }
-  .chat-message {
-    max-width: 80%; 
-    padding: 10px 12px; 
-    border-radius: 8px;
-  }
-  .user-message {
-    align-self: flex-end; 
-    background: #0000FF; 
-    color: white;
-  }
-  .assistant-message {
-    align-self: flex-start; 
-    background: #f5f5f5; 
-    color: #333;
-  }
-  .loading-message {
-    align-self: flex-start; 
-    padding: 10px 12px; 
-    color: #666;
-  }
 </style>
 
 </head>
@@ -373,25 +271,12 @@
 
 <div class="copyright-black-box">
   <div id="copyright-text"></div>
+  <!-- <div style="font-size:0.9rem;opacity:0.8;">@ Ming Li 2025-2028. All Rights Reserved</div> -->
   <div>
     <a href="https://github.com/limingabc123">Github</a> ·
     <a href="https://github.com/limingabc123/limingabc123.github.io/blob/main/LICENSE">License</a>
   </div>
 </div>
-
-<!-- 聊天窗口 HTML（新增） -->
-<div id="chat-widget">
-  <div class="chat-header">
-   李茗的个人小助理
-    <button id="close-chat">×</button>
-  </div>
-  <div id="chat-history"></div>
-  <div id="chat-input-area">
-    <input type="text" id="user-input" placeholder="请输入你的问题">
-    <button id="send-btn">发送</button>
-  </div>
-</div>
-<button id="open-chat">助手</button>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
@@ -426,90 +311,6 @@ document.getElementById('copyright-text').innerHTML =
   `&copy; ${new Date().getFullYear()} Ming Li. All rights reserved.`;
 
 $(document).ready(()=> setTimeout(()=>$(window).trigger('scroll'),100));
-
-// ========== 聊天功能逻辑（新增） ==========
-let chatHistory = []; // 存储多轮对话历史
-const apiUrl = "http://localhost:8000/chat"; // 本地中间代理的API地址
-
-// 绑定DOM元素
-const $chatWidget = $("#chat-widget");
-const $openChatBtn = $("#open-chat");
-const $closeChatBtn = $("#close-chat");
-const $chatHistory = $("#chat-history");
-const $userInput = $("#user-input");
-const $sendBtn = $("#send-btn");
-
-// 打开/关闭聊天窗口
-$openChatBtn.click(() => {
-  $chatWidget.fadeIn(300);
-  $openChatBtn.fadeOut(300);
-});
-$closeChatBtn.click(() => {
-  $chatWidget.fadeOut(300);
-  $openChatBtn.fadeIn(300);
-});
-
-// 发送消息核心函数
-async function sendMessage() {
-  const userMsg = $userInput.val().trim();
-  if (!userMsg) return;
-
-  // 清空输入框，添加用户消息到UI
-  $userInput.val("");
-  addMessageToUI("user", userMsg);
-
-  // 显示加载状态
-  const loadingId = addLoadingToUI();
-
-  try {
-    // 调用本地中间代理API
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: userMsg, history: chatHistory }),
-      credentials: "include" // 允许跨域携带凭证（多轮对话需要）
-    });
-
-    if (!response.ok) throw new Error("请先在本地启动Ollama和中间代理脚本～");
-    const data = await response.json();
-
-    // 更新对话历史，添加助手回复到UI
-    chatHistory = data.history;
-    removeLoadingFromUI(loadingId);
-    addMessageToUI("assistant", data.reply);
-  } catch (err) {
-    removeLoadingFromUI(loadingId);
-    addMessageToUI("assistant", `提示：${err.message}`);
-  }
-}
-
-// 辅助：添加消息到UI
-function addMessageToUI(role, content) {
-  const msgClass = role === "user" ? "user-message" : "assistant-message";
-  const msgEl = $(`<div class="chat-message ${msgClass}">${content}</div>`);
-  $chatHistory.append(msgEl);
-  $chatHistory.scrollTop($chatHistory[0].scrollHeight); // 滚动到底部
-}
-
-// 辅助：显示加载状态
-function addLoadingToUI() {
-  const loadingId = `loading-${Date.now()}`;
-  const loadingEl = $(`<div id="${loadingId}" class="loading-message">思考中...</div>`);
-  $chatHistory.append(loadingEl);
-  $chatHistory.scrollTop($chatHistory[0].scrollHeight);
-  return loadingId;
-}
-
-// 辅助：移除加载状态
-function removeLoadingFromUI(loadingId) {
-  $(`#${loadingId}`).remove();
-}
-
-// 绑定发送事件（按钮点击 + 回车键）
-$sendBtn.click(sendMessage);
-$userInput.keydown((e) => {
-  if (e.key === "Enter") sendMessage();
-});
 </script>
 </body>
 </html>
