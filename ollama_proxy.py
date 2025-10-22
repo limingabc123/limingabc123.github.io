@@ -71,7 +71,7 @@ app = FastAPI(title="Ollama DeepSeek 代理API")
 # 配置跨域（允许你的GitHub主页域名访问）
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://limingabc123.github.io"],  # 替换为你的GitHub Pages域名
+    allow_origins=["limingabc123.github.io"],  # 替换为你的GitHub Pages域名
     allow_credentials=True,
     allow_methods=["POST"],
     allow_headers=["Content-Type"],
