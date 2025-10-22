@@ -45,14 +45,15 @@ class ChatProxyHandler(http.server.BaseHTTPRequestHandler):
             ollama_messages.append({"role": "user", "content": user_message})
             
             ollama_request = {
-                "model": "deepseek-r1:7b",  # 使用系统中可用的模型
+                "model": "qwen2.5:0.5b",  # 使用更轻量级的模型
                 "messages": ollama_messages,
                 "stream": False,
                 "options": {
-                    "temperature": 0.2,  # 降低温度以获得更稳定的响应
-                    "top_p": 0.5,       # 降低top_p以加快推理
-                    "num_predict": 128, # 减少最大生成长度以加快响应
-                    "num_thread": 8     # 使用更多线程加速推理
+                    "temperature": 0.1,  # 极低温度确保直接输出，不显示思考过程
+                    "top_p": 0.3,       # 降低top_p以加快推理并减少思考
+                    "num_predict": 100, # 减少最大生成长度以加快响应
+                    "num_thread": 8,    # 使用更多线程加速推理
+                    "repeat_penalty": 1.2  # 增加重复惩罚避免冗余思考
                 }
             }
             
