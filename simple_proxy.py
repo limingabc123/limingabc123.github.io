@@ -1,0 +1,115 @@
+#!/usr/bin/env python3
+"""
+李茗个人小助手 - 简化版代理服务
+不需要安装外部依赖，使用标准库
+"""
+
+import http.server
+import socketserver
+import json
+import urllib.request
+import urllib.parse
+
+class ChatProxyHandler(http.server.BaseHTTPRequestHandler):
+    
+    def do_OPTIONS(self):
+        """处理预检请求"""
+        self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.end_headers()
+    
+    def do_POST(self):
+        """处理聊天请求"""
+        if self.path != '/chat':
+            self.send_error(404)
+            return
+            
+        try:
+            # 读取请求数据
+            content_length = int(self.headers['Content-Length'])
+            post_data = self.rfile.read(content_length)
+            request_data = json.loads(post_data.decode('utf-8'))
+            
+            user_message = request_data.get('message', '')
+            chat_history = request_data.get('history', [])
+            
+            print(f"收到用户消息: {user_message[:50]}...")
+            
+            # 构造Ollama请求
+            ollama_messages = []
+            for user_msg, assistant_reply in chat_history:
+                ollama_messages.append({"role": "user", "content": user_msg})
+                ollama_messages.append({"role": "assistant", "content": assistant_reply})
+            ollama_messages.append({"role": "user", "content": user_message})
+            
+            ollama_request = {
+                "model": "deepseek-r1:7b",
+                "messages": ollama_messages,
+                "stream": False,
+                "options": {
+                    "temperature": 0.7,
+                    "top_p": 0.9,
+                    "num_predict": 512
+                }
+            }
+            
+            # 发送请求到Ollama
+            ollama_url = "http://localhost:11434/api/chat"
+            req = urllib.request.Request(
+                ollama_url,
+                data=json.dumps(ollama_request).encode('utf-8'),
+                headers={'Content-Type': 'application/json'}
+            )
+            
+            with urllib.request.urlopen(req, timeout=60) as response:
+                ollama_response = json.loads(response.read().decode('utf-8'))
+                ollama_reply = ollama_response["message"]["content"]
+                
+                # 构造响应
+                response_data = {
+                    "reply": ollama_reply,
+                    "history": chat_history + [(user_message, ollama_reply)],
+                    "status": "success"
+                }
+                
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps(response_data).encode('utf-8'))
+                
+                print(f"成功生成回复，长度: {len(ollama_reply)}")
+                
+        except Exception as e:
+            error_msg = f"处理请求时出错: {str(e)}"
+            print(f"错误: {error_msg}")
+            
+            error_response = {
+                "reply": f"抱歉，服务暂时不可用: {str(e)}",
+                "history": chat_history,
+                "status": "error"
+            }
+            
+            self.send_response(500)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(json.dumps(error_response).encode('utf-8'))
+
+def run_server():
+    """启动代理服务器"""
+    PORT = 8000
+    with socketserver.TCPServer(("", PORT), ChatProxyHandler) as httpd:
+        print(f"李茗个人小助手代理服务已启动")
+        print(f"服务地址: http://localhost:{PORT}")
+        print(f"Ollama地址: http://localhost:11434")
+        print("按 Ctrl+C 停止服务")
+        try:
+            httpd.serve_forever()
+        except KeyboardInterrupt:
+            print("\n服务已停止")
+
+if __name__ == "__main__":
+    run_server()

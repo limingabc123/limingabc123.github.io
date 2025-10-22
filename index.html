@@ -473,7 +473,7 @@ async function sendMessage() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: userMsg, history: chatHistory }),
-      credentials: "include" // 允许跨域携带凭证（多轮对话需要）
+      mode: "cors" // 明确指定CORS模式
     });
 
     if (!response.ok) {
