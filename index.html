@@ -91,11 +91,11 @@
     box-shadow: 0 1px 4px rgba(0,0,0,0.05);
   }
 
-/* 返回顶部按钮容器：基于.last-section绝对定位 */
+/* 返回顶部按钮容器：固定定位 */
 .go-top-container {
-  position: absolute; /* 相对于.last-section定位 */
-  bottom: 100px;      /* 距离模块底部100px（可根据需求调整） */
-  right: 20px;        /* 距离模块右侧20px */
+  position: fixed; /* 改为固定定位 */
+  bottom: 100px;      /* 距离页面底部100px */
+  right: 20px;        /* 距离页面右侧20px */
   z-index: 9999;      /* 层级最高，避免被遮挡 */
   opacity: 0.9;       /* 默认半透明，若隐若现 */
   transition: all 0.3s ease; /* 悬浮/显示过渡效果 */
@@ -235,8 +235,33 @@
   #send-btn:hover {
     background: #0000CC;
   }
+  /* 小助手容器样式 */
+  .assistant-container {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .assistant-label {
+    background: rgba(0, 0, 255, 0.8);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+    box-shadow: 0 2px 8px rgba(0,0,255,0.3);
+    white-space: nowrap;
+    transition: all 0.3s ease;
+  }
+
   #open-chat {
-    position: fixed; 
     width: 60px; 
     height: 60px; 
     border-radius: 50%; 
@@ -244,15 +269,11 @@
     border: none; 
     cursor: pointer; 
     box-shadow: 0 2px 15px rgba(0,0,255,0.4); 
-    z-index: 20; 
     display: flex; 
     align-items: center; 
     justify-content: center; 
     overflow: hidden;
     transition: all 0.3s ease;
-    /* 移除固定位置限制，让它可以飞到页面任何位置 */
-    left: 50%;
-    top: 50%;
   }
   
   #open-chat img {
