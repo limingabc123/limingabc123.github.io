@@ -45,15 +45,18 @@ class ChatProxyHandler(http.server.BaseHTTPRequestHandler):
             ollama_messages.append({"role": "user", "content": user_message})
             
             ollama_request = {
-                "model": "deepseek-r1:7b",
+                "model": "qwen2.5:0.5b",  # 更换为更小更快的模型
                 "messages": ollama_messages,
                 "stream": False,
                 "options": {
-                    "temperature": 0.7,
-                    "top_p": 0.9,
-                    "num_predict": 512
+                    "temperature": 0.2,  # 进一步降低温度以获得更快的响应
+                    "top_p": 0.5,       # 降低top_p以加快推理
+                    "num_predict": 128, # 减少最大生成长度以加快响应
+                    "num_thread": 8     # 使用更多线程加速推理
                 }
             }
+            
+            print("正在向Ollama发送请求...")
             
             # 发送请求到Ollama
             ollama_url = "http://localhost:11434/api/chat"
@@ -63,28 +66,45 @@ class ChatProxyHandler(http.server.BaseHTTPRequestHandler):
                 headers={'Content-Type': 'application/json'}
             )
             
-            with urllib.request.urlopen(req, timeout=60) as response:
-                ollama_response = json.loads(response.read().decode('utf-8'))
-                ollama_reply = ollama_response["message"]["content"]
+            try:
+                with urllib.request.urlopen(req, timeout=60) as response:
+                    ollama_response = json.loads(response.read().decode('utf-8'))
+                    ollama_reply = ollama_response["message"]["content"]
+                    
+                    # 构造响应
+                    response_data = {
+                        "reply": ollama_reply,
+                        "history": chat_history + [(user_message, ollama_reply)],
+                        "status": "success"
+                    }
+                    
+                    self.send_response(200)
+                    self.send_header('Content-Type', 'application/json')
+                    self.send_header('Access-Control-Allow-Origin', '*')
+                    self.end_headers()
+                    self.wfile.write(json.dumps(response_data).encode('utf-8'))
+                    
+                    print(f"成功生成回复，长度: {len(ollama_reply)}")
+                    
+            except urllib.error.URLError as e:
+                error_msg = f"无法连接到Ollama服务: {str(e)}"
+                print(f"Ollama连接错误: {error_msg}")
                 
-                # 构造响应
-                response_data = {
-                    "reply": ollama_reply,
-                    "history": chat_history + [(user_message, ollama_reply)],
-                    "status": "success"
+                error_response = {
+                    "reply": "无法连接到AI服务，请确保Ollama服务正在运行",
+                    "history": chat_history,
+                    "status": "error"
                 }
                 
-                self.send_response(200)
+                self.send_response(503)
                 self.send_header('Content-Type', 'application/json')
                 self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
-                self.wfile.write(json.dumps(response_data).encode('utf-8'))
-                
-                print(f"成功生成回复，长度: {len(ollama_reply)}")
+                self.wfile.write(json.dumps(error_response).encode('utf-8'))
                 
         except Exception as e:
             error_msg = f"处理请求时出错: {str(e)}"
-            print(f"错误: {error_msg}")
+            print(f"代理服务错误: {error_msg}")
             
             error_response = {
                 "reply": f"抱歉，服务暂时不可用: {str(e)}",

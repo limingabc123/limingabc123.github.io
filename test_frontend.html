@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>前端连接测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <h1>前端连接测试</h1>
+    
+    <div class="test-section">
+        <h3>测试1: 检查代理服务连接</h3>
+        <button onclick="testProxyConnection()">测试代理服务连接</button>
+        <div id="proxyResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>测试2: 发送聊天消息</h3>
+        <input type="text" id="messageInput" placeholder="输入测试消息" value="你好">
+        <button onclick="sendChatMessage()">发送消息</button>
+        <div id="chatResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>测试3: 检查CORS支持</h3>
+        <button onclick="testCORS()">测试CORS</button>
+        <div id="corsResult" class="result"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000/chat';
+
+        function displayResult(elementId, message, isSuccess) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = 'result ' + (isSuccess ? 'success' : 'error');
+        }
+
+        async function testProxyConnection() {
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: 'test' })
+                });
+                
+                if (response.ok) {
+                    displayResult('proxyResult', '✅ 代理服务连接成功！', true);
+                } else {
+                    displayResult('proxyResult', `❌ 代理服务返回错误状态: ${response.status}`, false);
+                }
+            } catch (error) {
+                displayResult('proxyResult', `❌ 连接失败: ${error.message}`, false);
+            }
+        }
+
+        async function sendChatMessage() {
+            const message = document.getElementById('messageInput').value;
+            if (!message) {
+                displayResult('chatResult', '请输入消息', false);
+                return;
+            }
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    displayResult('chatResult', `✅ 消息发送成功！响应: ${JSON.stringify(data)}`, true);
+                } else {
+                    displayResult('chatResult', `❌ 发送失败: ${response.status}`, false);
+                }
+            } catch (error) {
+                displayResult('chatResult', `❌ 发送失败: ${error.message}`, false);
+            }
+        }
+
+        async function testCORS() {
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'OPTIONS',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Origin': window.location.origin
+                    }
+                });
+                
+                if (response.ok) {
+                    const corsHeaders = response.headers.get('Access-Control-Allow-Origin');
+                    displayResult('corsResult', `✅ CORS支持正常！允许的来源: ${corsHeaders || '*'}'`, true);
+                } else {
+                    displayResult('corsResult', '❌ CORS测试失败', false);
+                }
+            } catch (error) {
+                displayResult('corsResult', `❌ CORS测试失败: ${error.message}`, false);
+            }
+        }
+    </script>
+</body>
+</html>

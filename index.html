@@ -175,6 +175,8 @@
     box-shadow: 0 3px 8px rgba(0,0,0,0.05); 
     display: none; 
     z-index: 20;
+    cursor: move; /* 显示可拖动光标 */
+    user-select: none; /* 防止拖动时选中文本 */
   }
   #chat-widget .chat-header {
     padding: 12px; 
@@ -184,6 +186,14 @@
     display: flex; 
     justify-content: space-between; 
     align-items: center;
+    cursor: move; /* 头部可拖动 */
+  }
+  
+  /* 拖动时的样式 */
+  #chat-widget.dragging {
+    opacity: 0.8;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    transition: none; /* 拖动时禁用过渡效果 */
   }
   #chat-widget .chat-header button {
     border: none; 
@@ -439,6 +449,67 @@ const $chatHistory = $("#chat-history");
 const $userInput = $("#user-input");
 const $sendBtn = $("#send-btn");
 
+// 拖动功能变量
+let isDragging = false;
+let dragOffset = { x: 0, y: 0 };
+let currentPosition = { x: 20, y: 80 }; // 默认位置
+
+// 初始化拖动功能
+function initDrag() {
+  const $chatHeader = $chatWidget.find('.chat-header');
+  
+  // 鼠标按下事件
+  $chatHeader.on('mousedown', function(e) {
+    isDragging = true;
+    
+    // 计算鼠标相对于聊天窗口的偏移
+    const widgetRect = $chatWidget[0].getBoundingClientRect();
+    dragOffset.x = e.clientX - widgetRect.left;
+    dragOffset.y = e.clientY - widgetRect.top;
+    
+    // 添加拖动样式
+    $chatWidget.addClass('dragging');
+    e.preventDefault();
+  });
+  
+  // 鼠标移动事件
+  $(document).on('mousemove', function(e) {
+    if (!isDragging) return;
+    
+    // 计算新位置
+    const newX = e.clientX - dragOffset.x;
+    const newY = e.clientY - dragOffset.y;
+    
+    // 限制在可视区域内
+    const maxX = window.innerWidth - $chatWidget.outerWidth();
+    const maxY = window.innerHeight - $chatWidget.outerHeight();
+    
+    currentPosition.x = Math.max(0, Math.min(newX, maxX));
+    currentPosition.y = Math.max(0, Math.min(newY, maxY));
+    
+    // 应用新位置
+    $chatWidget.css({
+      left: currentPosition.x + 'px',
+      top: currentPosition.y + 'px',
+      right: 'auto',
+      bottom: 'auto'
+    });
+  });
+  
+  // 鼠标释放事件
+  $(document).on('mouseup', function() {
+    if (isDragging) {
+      isDragging = false;
+      $chatWidget.removeClass('dragging');
+    }
+  });
+  
+  // 防止输入框内的拖动干扰
+  $userInput.on('mousedown', function(e) {
+    e.stopPropagation();
+  });
+}
+
 // 打开/关闭聊天窗口
 $openChatBtn.click(() => {
   $chatWidget.fadeIn(300);
@@ -529,6 +600,9 @@ $userInput.keydown((e) => {
 
 // 初始化聊天窗口
 $(document).ready(() => {
+  // 初始化拖动功能
+  initDrag();
+  
   // 添加欢迎消息
   setTimeout(() => {
     if ($chatHistory.children().length === 0) {
