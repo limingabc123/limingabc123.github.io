@@ -319,7 +319,7 @@ function addMessageToUI(role, content) {
 // 辅助：显示加载状态
 function addLoadingToUI() {
   const loadingId = `loading-${Date.now()}`;
-  const loadingEl = $(`<div id="${loadingId}" class="loading-message">思考中...</div>`);
+  const loadingEl = $(`<div id="${loadingId}" class="loading-message">Thinkng...</div>`);
   $chatHistory.append(loadingEl);
   $chatHistory.scrollTop($chatHistory[0].scrollHeight);
   return loadingId;
