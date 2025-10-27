@@ -5,8 +5,9 @@
 
 # 个人学术网站与AI助手集成项目
 
-## 项目预览
-[![网站截图](https://raw.githubusercontent.com/senli1073/senli1073.github.io/main/screenshot_full.png)](https://senli1073.github.io/)
+## 项目预览<img width="770" height="966" alt="image" src="https://github.com/user-attachments/assets/b49dacbf-71bf-4392-87f2-53e3479154e1" />
+
+
 
 ## 项目介绍
 
