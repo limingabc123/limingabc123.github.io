@@ -7,6 +7,7 @@
 
 ## 项目预览
 [![网站截图](https://raw.githubusercontent.com/senli1073/senli1073.github.io/main/screenshot_full.png)](https://senli1073.github.io/)
+[(https://github.com/limingabc123/limingabc123.github.io/blob/main/static/assets/Yangshi.jpg)](limingabc123.github.io)
 
 ## 项目介绍
 
