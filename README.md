@@ -6,7 +6,7 @@
 # 个人学术网站与AI助手集成项目
 
 ## 项目预览
-[![网站截图](https://githubu.com/limingabc123/limingabc123.github.io/blob/main/static/assets/Yangshi.jpg)](https://limingabc123.github.io)
+[![网站截图](https://github.com/limingabc123/limingabc123.github.io/blob/main/lm.jpg)](https://limingabc123.github.io)
 
 ## 项目介绍
 
