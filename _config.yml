@@ -103,4 +103,4 @@ theme: icarus
 deploy:
   type: git
   repo: https://github.com/limingabc123/limingabc123.github.io
-  branch: main 
+  branch: master
