@@ -1,0 +1,28 @@
+.category-box {
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+}
+.category-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  border-left-color: $primary;
+}
+.category-box .media-left .icon {
+  color: $primary;
+}
+.category-box .title {
+  color: $dark;
+}
+.category-box .subtitle {
+  color: $grey;
+}
+.category-box .tag.is-primary {
+  background-color: $primary;
+  color: $white;
+}
+.category-box .tag.is-light {
+  background-color: $light;
+  color: $dark;
+}
+mobile()
+tablet()
