@@ -61,11 +61,54 @@ class PDFViewer {
       .pdf-viewer-container {
         width: 100%;
         max-width: 800px;
+        max-height: 600px;
         margin: 0 auto;
         background: #f9f9f9;
         border-radius: 8px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         padding: 20px;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+
+      /* 自定义滚动条样式 */
+      .pdf-viewer-container::-webkit-scrollbar {
+        width: 10px;
+      }
+
+      .pdf-viewer-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 5px;
+      }
+
+      .pdf-viewer-container::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 5px;
+      }
+
+      .pdf-viewer-container::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+      }
+
+      /* Firefox滚动条样式 */
+      .pdf-viewer-container {
+        scrollbar-width: thin;
+        scrollbar-color: #c1c1c1 #f1f1f1;
+      }
+
+      /* 响应式设计：在小屏幕上减少容器高度 */
+      @media (max-width: 768px) {
+        .pdf-viewer-container {
+          max-height: 400px;
+          padding: 15px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .pdf-viewer-container {
+          max-height: 300px;
+          padding: 10px;
+        }
       }
 
       .pdf-page-canvas {
@@ -213,8 +256,8 @@ class PDFViewer {
   }
 
   initScrollTracking() {
-    // 监听滚动事件
-    window.addEventListener('scroll', () => {
+    // 监听容器滚动事件
+    this.viewerContainer.addEventListener('scroll', () => {
       this.updateProgress();
     });
 
@@ -225,12 +268,16 @@ class PDFViewer {
   updateProgress() {
     if (!this.pages.length) return;
 
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const windowHeight = window.innerHeight;
-    const documentHeight = document.documentElement.scrollHeight;
+    // 容器内部滚动位置和尺寸
+    const containerScrollTop = this.viewerContainer.scrollTop;
+    const containerHeight = this.viewerContainer.clientHeight;
+    const contentHeight = this.viewerContainer.scrollHeight;
 
-    // 计算总进度百分比
-    const scrollPercent = (scrollTop / (documentHeight - windowHeight)) * 100;
+    // 计算容器内部滚动百分比
+    let scrollPercent = 0;
+    if (contentHeight > containerHeight) {
+      scrollPercent = (containerScrollTop / (contentHeight - containerHeight)) * 100;
+    }
     const clampedPercent = Math.min(100, Math.max(0, scrollPercent));
 
     // 更新进度条
@@ -244,20 +291,16 @@ class PDFViewer {
       progressText.textContent = `${Math.round(clampedPercent)}%`;
     }
 
-    // 计算当前页面
-    const viewerRect = this.viewerContainer.getBoundingClientRect();
-    const viewerTop = viewerRect.top + scrollTop;
-    const viewerBottom = viewerTop + viewerRect.height;
-
+    // 计算当前页面（基于容器内部滚动位置）
     let currentPage = 1;
     for (let i = 0; i < this.pages.length; i++) {
       const page = this.pages[i];
-      const pageTop = viewerTop + page.top;
+      const pageTop = page.top;
       const pageBottom = pageTop + page.height;
 
-      // 如果页面在视口中
-      if (scrollTop + windowHeight * 0.3 >= pageTop &&
-          scrollTop <= pageBottom) {
+      // 如果页面在容器视口中
+      if (containerScrollTop + containerHeight * 0.3 >= pageTop &&
+          containerScrollTop <= pageBottom) {
         currentPage = i + 1;
         break;
       }
