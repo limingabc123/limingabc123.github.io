@@ -1,6 +1,13 @@
 class PDFViewer {
   constructor(containerId, pdfUrl) {
+    console.log('PDFViewer 构造函数调用，容器ID:', containerId, 'PDF URL:', pdfUrl);
     this.container = document.getElementById(containerId);
+    if (!this.container) {
+      console.error('PDFViewer: 容器元素未找到:', containerId);
+      return;
+    }
+    console.log('PDFViewer: 容器找到:', this.container);
+
     this.pdfUrl = pdfUrl;
     this.pdfDoc = null;
     this.scale = 2.0;
@@ -33,27 +40,42 @@ class PDFViewer {
   }
 
   async init() {
-    // 配置PDF.js worker
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+    console.log('PDFViewer: init() 开始');
+    try {
+      // 配置PDF.js worker
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+      console.log('PDFViewer: PDF.js worker 配置完成');
 
-    // 创建UI结构
-    this.createUI();
+      // 创建UI结构
+      console.log('PDFViewer: 开始创建UI');
+      this.createUI();
 
-    // 加载PDF
-    await this.loadPDF();
+      // 加载PDF
+      console.log('PDFViewer: 开始加载PDF');
+      await this.loadPDF();
 
-    // 渲染所有页面
-    await this.renderAllPages();
+      // 渲染所有页面
+      console.log('PDFViewer: 开始渲染所有页面');
+      await this.renderAllPages();
 
-    // 初始化滚动监听
-    this.initScrollTracking();
+      // 初始化滚动监听
+      console.log('PDFViewer: 初始化滚动监听');
+      this.initScrollTracking();
+
+      console.log('PDFViewer: init() 完成');
+    } catch (error) {
+      console.error('PDFViewer: init() 出错:', error);
+      throw error;
+    }
   }
 
   createUI() {
+    console.log('PDFViewer: createUI() 开始');
     // 创建主容器
     this.viewerContainer = document.createElement('div');
     this.viewerContainer.className = 'pdf-viewer-container';
     this.viewerContainer.style.position = 'relative';
+    console.log('PDFViewer: 查看器容器创建完成');
 
     // 创建进度条
     this.progressIndicator = document.createElement('div');
@@ -65,25 +87,32 @@ class PDFViewer {
       <div class="progress-text">0%</div>
       <div class="page-info">页面: <span class="current-page">1</span>/<span class="total-pages">0</span></div>
     `;
+    console.log('PDFViewer: 进度指示器创建完成');
 
     // 创建缩略图侧边栏
+    console.log('PDFViewer: 开始创建缩略图侧边栏');
     this.createThumbnailSidebar();
 
     // 创建功能工具栏
+    console.log('PDFViewer: 开始创建工具栏');
     this.createToolbar();
 
     this.container.appendChild(this.progressIndicator);
     this.container.appendChild(this.viewerContainer);
+    console.log('PDFViewer: 容器元素添加到DOM');
 
     // 添加CSS
+    console.log('PDFViewer: 开始添加CSS样式');
     this.addStyles();
+    console.log('PDFViewer: createUI() 完成');
   }
 
   addStyles() {
     const styles = `
       .pdf-embed-container {
-        position: relative;
-        min-height: 300px;
+        position: relative !important;
+        min-height: 300px !important;
+        overflow: visible !important;
       }
 
       .pdf-viewer-container {
@@ -207,20 +236,20 @@ class PDFViewer {
 
       /* 缩略图侧边栏样式 */
       .pdf-thumbnail-sidebar {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 180px;
-        height: 100%;
-        background: white;
-        border-right: 1px solid #ddd;
-        overflow-y: auto;
-        z-index: 100;
-        transition: transform 0.3s ease;
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 180px !important;
+        height: 100% !important;
+        background: white !important;
+        border-right: 1px solid #ddd !important;
+        overflow-y: auto !important;
+        z-index: 1000 !important;
+        transition: transform 0.3s ease !important;
       }
 
       .pdf-thumbnail-sidebar.hidden {
-        transform: translateX(-100%);
+        transform: translateX(-100%) !important;
       }
 
       .thumbnail-header {
@@ -294,14 +323,14 @@ class PDFViewer {
 
       /* 工具栏样式 */
       .pdf-toolbar {
-        position: relative;
-        background: white;
-        border-bottom: 1px solid #ddd;
-        padding: 8px 15px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        z-index: 99;
+        position: relative !important;
+        background: white !important;
+        border-bottom: 1px solid #ddd !important;
+        padding: 8px 15px !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        z-index: 999 !important;
       }
 
       .toolbar-left, .toolbar-center, .toolbar-right {
@@ -374,6 +403,33 @@ class PDFViewer {
         text-align: center;
       }
 
+      /* 工具栏提示样式 */
+      .toolbar-hint {
+        position: absolute;
+        bottom: -30px;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        font-size: 12px;
+        color: #666;
+        background: #f8f9fa;
+        padding: 5px 10px;
+        border-top: 1px solid #eee;
+        border-radius: 0 0 8px 8px;
+        z-index: 998;
+      }
+
+      .hint-text {
+        display: inline-block;
+        animation: hint-pulse 2s infinite;
+      }
+
+      @keyframes hint-pulse {
+        0% { opacity: 0.7; }
+        50% { opacity: 1; }
+        100% { opacity: 0.7; }
+      }
+
       /* 响应式设计 */
       @media (max-width: 768px) {
         .pdf-thumbnail-sidebar {
@@ -416,20 +472,20 @@ class PDFViewer {
 
       /* 目录侧边栏样式 */
       .pdf-toc-sidebar {
-        position: absolute;
-        right: 0;
-        top: 0;
-        width: 250px;
-        height: 100%;
-        background: white;
-        border-left: 1px solid #ddd;
-        overflow-y: auto;
-        z-index: 100;
-        transition: transform 0.3s ease;
+        position: absolute !important;
+        right: 0 !important;
+        top: 0 !important;
+        width: 250px !important;
+        height: 100% !important;
+        background: white !important;
+        border-left: 1px solid #ddd !important;
+        overflow-y: auto !important;
+        z-index: 1000 !important;
+        transition: transform 0.3s ease !important;
       }
 
       .pdf-toc-sidebar.hidden {
-        transform: translateX(100%);
+        transform: translateX(100%) !important;
       }
 
       .toc-header {
@@ -977,8 +1033,11 @@ class PDFViewer {
   }
 
   createToolbar() {
+    console.log('PDFViewer: createToolbar() 开始');
     this.toolbar = document.createElement('div');
     this.toolbar.className = 'pdf-toolbar';
+    console.log('PDFViewer: 工具栏元素创建，类名:', this.toolbar.className);
+
     this.toolbar.innerHTML = `
       <div class="toolbar-left">
         <button class="toolbar-btn" title="缩略图导航" data-action="toggle-thumbnails">
@@ -1019,10 +1078,20 @@ class PDFViewer {
           <span>➕</span>
         </button>
       </div>
+      <div class="toolbar-hint">
+        <span class="hint-text">💡 提示：点击上方图标可使用高级功能（缩略图、目录、搜索、标注、打印）</span>
+      </div>
     `;
+    console.log('PDFViewer: 工具栏HTML设置完成');
 
     // 插入到查看器容器前
-    this.container.insertBefore(this.toolbar, this.viewerContainer);
+    if (this.container && this.viewerContainer) {
+      this.container.insertBefore(this.toolbar, this.viewerContainer);
+      console.log('PDFViewer: 工具栏插入到DOM，父容器:', this.container, '查看器容器:', this.viewerContainer);
+    } else {
+      console.error('PDFViewer: 容器或查看器容器未找到，无法插入工具栏');
+      return;
+    }
 
     // 绑定工具栏事件
     this.toolbar.addEventListener('click', (e) => {
@@ -1030,6 +1099,7 @@ class PDFViewer {
       if (!btn) return;
 
       const action = btn.dataset.action;
+      console.log('PDFViewer: 工具栏按钮点击，动作:', action);
       this.handleToolbarAction(action);
     });
 
@@ -1037,14 +1107,21 @@ class PDFViewer {
     const pageInput = this.toolbar.querySelector('.page-input');
     if (pageInput) {
       pageInput.addEventListener('change', (e) => {
+        console.log('PDFViewer: 页码输入框变化，值:', e.target.value);
         this.handlePageInputChange(e.target.value);
       });
       pageInput.addEventListener('keyup', (e) => {
         if (e.key === 'Enter') {
+          console.log('PDFViewer: 页码输入框回车，值:', e.target.value);
           this.handlePageInputChange(e.target.value);
         }
       });
+      console.log('PDFViewer: 页码输入框事件绑定完成');
+    } else {
+      console.warn('PDFViewer: 未找到页码输入框元素');
     }
+
+    console.log('PDFViewer: createToolbar() 完成');
   }
 
   createTOCSidebar() {
