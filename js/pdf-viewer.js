@@ -3,7 +3,7 @@ class PDFViewer {
     this.container = document.getElementById(containerId);
     this.pdfUrl = pdfUrl;
     this.pdfDoc = null;
-    this.scale = 1.5;
+    this.scale = 2.0;
     this.pages = [];
     this.currentPage = 1;
     this.totalPages = 0;
@@ -60,13 +60,13 @@ class PDFViewer {
     const styles = `
       .pdf-viewer-container {
         width: 100%;
-        max-width: 800px;
-        max-height: 600px;
+        max-width: 1200px;
+        max-height: 800px;
         margin: 0 auto;
         background: #f9f9f9;
         border-radius: 8px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        padding: 20px;
+        padding: 5px;
         overflow-y: auto;
         overflow-x: hidden;
       }
@@ -99,15 +99,15 @@ class PDFViewer {
       /* 响应式设计：在小屏幕上减少容器高度 */
       @media (max-width: 768px) {
         .pdf-viewer-container {
-          max-height: 400px;
-          padding: 15px;
+          max-height: 500px;
+          padding: 5px;
         }
       }
 
       @media (max-width: 480px) {
         .pdf-viewer-container {
-          max-height: 300px;
-          padding: 10px;
+          max-height: 400px;
+          padding: 3px;
         }
       }
 
@@ -199,10 +199,36 @@ class PDFViewer {
     // 清空容器
     this.viewerContainer.innerHTML = '';
 
+    // 计算自适应缩放比例
+    let adaptiveScale = this.scale; // 默认使用原始缩放比例
+    try {
+      // 获取第一页来计算合适的缩放比例
+      const firstPage = await this.pdfDoc.getPage(1);
+      const originalViewport = firstPage.getViewport({ scale: 1.0 });
+      const originalWidth = originalViewport.width;
+
+      // 计算容器可用宽度（减去padding和滚动条宽度）
+      const containerWidth = this.viewerContainer.clientWidth;
+      const availableWidth = Math.max(containerWidth - 20, 100); // 至少100px
+
+      // 计算缩放比例以适应容器宽度
+      const calculatedScale = availableWidth / originalWidth;
+
+      // 限制缩放比例范围（最小1.0，最大3.0）
+      adaptiveScale = Math.max(1.0, Math.min(3.0, calculatedScale));
+
+      // 保留一位小数
+      adaptiveScale = Math.round(adaptiveScale * 10) / 10;
+
+      console.log(`PDF自适应缩放: 原始宽度=${originalWidth}px, 容器宽度=${containerWidth}px, 计算缩放=${calculatedScale}, 最终缩放=${adaptiveScale}`);
+    } catch (error) {
+      console.warn('无法计算自适应缩放比例，使用默认值:', error);
+    }
+
     // 逐个渲染页面
     for (let pageNum = 1; pageNum <= this.totalPages; pageNum++) {
       const page = await this.pdfDoc.getPage(pageNum);
-      const viewport = page.getViewport({ scale: this.scale });
+      const viewport = page.getViewport({ scale: adaptiveScale });
 
       // 创建canvas元素
       const canvas = document.createElement('canvas');
