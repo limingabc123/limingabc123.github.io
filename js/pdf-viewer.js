@@ -115,19 +115,80 @@ class PDFViewer {
         overflow: visible !important;
       }
 
+      /* PDF加载状态样式 */
+      .pdf-loading {
+        text-align: center;
+        padding: 60px 30px;
+        background: rgba(248, 250, 252, 0.9);
+        border-radius: 12px;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        margin: 10px 0;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+      }
+
+      .pdf-loading div:first-child {
+        font-size: 16px;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 20px;
+        letter-spacing: 0.3px;
+      }
+
+      .loading-spinner {
+        display: inline-block;
+        width: 50px;
+        height: 50px;
+        border: 4px solid rgba(226, 232, 240, 0.8);
+        border-top: 4px solid #4f46e5;
+        border-radius: 50%;
+        animation: spin 1.2s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      /* 加载骨架屏 */
+      .pdf-loading-skeleton {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        padding: 40px;
+      }
+
+      .skeleton-page {
+        width: 80%;
+        height: 400px;
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: skeleton-loading 1.5s ease-in-out infinite;
+        border-radius: 8px;
+      }
+
+      @keyframes skeleton-loading {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+      }
+
       .pdf-viewer-container {
         width: 100%;
         max-width: 1200px;
         max-height: 800px;
         margin: 0 auto;
-        background: #f9f9f9;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        padding: 5px;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+        padding: 20px;
         overflow-y: auto;
         overflow-x: hidden;
         margin-left: 0;
-        transition: margin-left 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(226, 232, 240, 0.8);
       }
 
       .pdf-viewer-container.with-sidebar {
@@ -135,147 +196,221 @@ class PDFViewer {
         width: calc(100% - 180px);
       }
 
-      /* 自定义滚动条样式 */
+      /* 自定义滚动条样式 - 现代化设计 */
       .pdf-viewer-container::-webkit-scrollbar {
         width: 10px;
       }
 
       .pdf-viewer-container::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 5px;
+        background: rgba(241, 245, 249, 0.8);
+        border-radius: 10px;
+        margin: 4px 0;
       }
 
       .pdf-viewer-container::-webkit-scrollbar-thumb {
-        background: #c1c1c1;
-        border-radius: 5px;
+        background: linear-gradient(180deg, #c1c1c1 0%, #a8a8a8 100%);
+        border-radius: 10px;
+        border: 2px solid rgba(241, 245, 249, 0.8);
+        transition: all 0.3s ease;
       }
 
       .pdf-viewer-container::-webkit-scrollbar-thumb:hover {
-        background: #a8a8a8;
+        background: linear-gradient(180deg, #a8a8a8 0%, #8f8f8f 100%);
+        transform: scale(1.05);
       }
 
       /* Firefox滚动条样式 */
       .pdf-viewer-container {
         scrollbar-width: thin;
-        scrollbar-color: #c1c1c1 #f1f1f1;
+        scrollbar-color: #c1c1c1 #f1f5f9;
       }
 
-      /* 响应式设计：在小屏幕上减少容器高度 */
+      /* 响应式设计：在小屏幕上优化容器 */
       @media (max-width: 768px) {
         .pdf-viewer-container {
-          max-height: 500px;
-          padding: 5px;
+          max-height: 600px;
+          padding: 15px;
+          border-radius: 10px;
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07), 0 1px 2px rgba(0, 0, 0, 0.04);
         }
       }
 
       @media (max-width: 480px) {
         .pdf-viewer-container {
-          max-height: 400px;
-          padding: 3px;
+          max-height: 500px;
+          padding: 12px;
+          border-radius: 8px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 1px rgba(0, 0, 0, 0.03);
         }
       }
 
       .pdf-page-canvas {
         display: block;
-        margin: 0 auto 20px auto;
-        border: 1px solid #ddd;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        margin: 0 auto 24px auto;
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
         max-width: 100%;
         height: auto;
+        border-radius: 4px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: white;
+      }
+
+      .pdf-page-canvas:hover {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+        border-color: rgba(148, 163, 184, 0.5);
+        transform: translateY(-1px);
       }
 
       .pdf-progress-indicator {
         position: fixed;
-        top: 20px;
-        right: 20px;
-        background: white;
-        padding: 10px 15px;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        top: 24px;
+        right: 24px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        padding: 16px 20px;
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.05);
         z-index: 1000;
-        font-family: Arial, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         font-size: 14px;
-        min-width: 150px;
+        min-width: 180px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .pdf-progress-indicator:hover {
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(0, 0, 0, 0.06);
+        transform: translateY(-2px);
       }
 
       .progress-bar {
         width: 100%;
-        height: 6px;
-        background: #e0e0e0;
-        border-radius: 3px;
+        height: 8px;
+        background: rgba(226, 232, 240, 0.8);
+        border-radius: 4px;
         overflow: hidden;
-        margin-bottom: 8px;
+        margin-bottom: 12px;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
       }
 
       .progress-fill {
         height: 100%;
-        background: linear-gradient(90deg, #4285f4, #34a853);
+        background: linear-gradient(90deg, #4f46e5, #7c3aed, #a855f7);
         width: 0%;
-        transition: width 0.3s ease;
+        transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 4px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .progress-fill::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg,
+          rgba(255, 255, 255, 0.2) 0%,
+          rgba(255, 255, 255, 0.1) 50%,
+          rgba(255, 255, 255, 0.2) 100%);
+        animation: progress-shine 2s infinite;
+      }
+
+      @keyframes progress-shine {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
       }
 
       .progress-text {
-        font-weight: bold;
-        margin-bottom: 5px;
-        color: #333;
-      }
-
-      .page-info {
-        color: #666;
-        font-size: 12px;
-      }
-
-      .current-page {
-        font-weight: bold;
-        color: #4285f4;
-      }
-
-      .total-pages {
-        font-weight: bold;
-      }
-
-      /* 缩略图侧边栏样式 */
-      .pdf-thumbnail-sidebar {
-        position: absolute !important;
-        left: 0 !important;
-        top: 0 !important;
-        width: 180px !important;
-        height: 100% !important;
-        background: white !important;
-        border-right: 1px solid #ddd !important;
-        overflow-y: auto !important;
-        z-index: 1000 !important;
-        transition: transform 0.3s ease !important;
-      }
-
-      .pdf-thumbnail-sidebar.hidden {
-        transform: translateX(-100%) !important;
-      }
-
-      .thumbnail-header {
-        padding: 10px;
-        background: #f5f5f5;
-        border-bottom: 1px solid #ddd;
+        font-weight: 700;
+        margin-bottom: 6px;
+        color: #1e293b;
+        font-size: 15px;
         display: flex;
         justify-content: space-between;
         align-items: center;
       }
 
+      .page-info {
+        color: #64748b;
+        font-size: 13px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 4px;
+      }
+
+      .current-page {
+        font-weight: 700;
+        color: #4f46e5;
+        font-size: 14px;
+      }
+
+      .total-pages {
+        font-weight: 600;
+        color: #475569;
+      }
+
+      /* 缩略图侧边栏样式 - 现代化设计 */
+      .pdf-thumbnail-sidebar {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 200px !important;
+        height: 100% !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        border-right: 1px solid rgba(226, 232, 240, 0.8) !important;
+        overflow-y: auto !important;
+        z-index: 1000 !important;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 5px 0 25px rgba(0, 0, 0, 0.08);
+      }
+
+      .pdf-thumbnail-sidebar.hidden {
+        transform: translateX(-100%) !important;
+        box-shadow: none !important;
+      }
+
+      .thumbnail-header {
+        padding: 14px 16px;
+        background: rgba(248, 250, 252, 0.9);
+        border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+      }
+
       .thumbnail-header h3 {
         margin: 0;
-        font-size: 14px;
-        font-weight: bold;
-        color: #333;
+        font-size: 15px;
+        font-weight: 700;
+        color: #1e293b;
+        letter-spacing: 0.2px;
       }
 
       .thumbnail-toggle {
-        background: #4285f4;
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
         color: white;
         border: none;
-        padding: 3px 8px;
-        border-radius: 3px;
+        padding: 6px 12px;
+        border-radius: 6px;
         font-size: 12px;
         cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 6px rgba(79, 70, 229, 0.2);
+      }
+
+      .thumbnail-toggle:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
       }
 
       .thumbnail-container {
@@ -321,22 +456,27 @@ class PDFViewer {
         border-radius: 2px 0 0 0;
       }
 
-      /* 工具栏样式 */
+      /* 工具栏样式 - 现代化设计 */
       .pdf-toolbar {
         position: relative !important;
-        background: white !important;
-        border-bottom: 1px solid #ddd !important;
-        padding: 8px 15px !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.8) !important;
+        padding: 12px 20px !important;
         display: flex !important;
         justify-content: space-between !important;
         align-items: center !important;
         z-index: 999 !important;
+        border-radius: 12px 12px 0 0;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+        margin-bottom: 2px;
       }
 
       .toolbar-left, .toolbar-center, .toolbar-right {
         display: flex;
         align-items: center;
-        gap: 5px;
+        gap: 8px;
       }
 
       .toolbar-center {
@@ -347,87 +487,135 @@ class PDFViewer {
       .page-display {
         display: flex;
         align-items: center;
-        gap: 5px;
-        margin: 0 10px;
+        gap: 8px;
+        margin: 0 12px;
+        background: rgba(248, 250, 252, 0.8);
+        padding: 6px 12px;
+        border-radius: 8px;
+        border: 1px solid rgba(226, 232, 240, 0.6);
       }
 
       .page-input {
-        width: 50px;
-        padding: 3px 5px;
-        border: 1px solid #ddd;
-        border-radius: 3px;
+        width: 55px;
+        padding: 6px 8px;
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        border-radius: 6px;
         text-align: center;
         font-size: 14px;
+        font-weight: 500;
+        color: #1e293b;
+        background: white;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+      }
+
+      .page-input:focus {
+        outline: none;
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
       }
 
       .page-separator {
-        margin: 0 2px;
-        color: #666;
+        margin: 0 4px;
+        color: #64748b;
+        font-weight: 500;
       }
 
       .total-pages-display {
-        color: #666;
+        color: #475569;
         font-size: 14px;
+        font-weight: 600;
       }
 
       .toolbar-btn {
-        background: #f5f5f5;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        padding: 5px 10px;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        border-radius: 8px;
+        padding: 8px 12px;
         cursor: pointer;
         font-size: 14px;
-        transition: all 0.2s ease;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         display: flex;
         align-items: center;
         justify-content: center;
-        min-width: 32px;
-        min-height: 32px;
+        min-width: 36px;
+        min-height: 36px;
+        color: #475569;
+        font-weight: 500;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
       }
 
       .toolbar-btn:hover {
-        background: #e8e8e8;
-        border-color: #ccc;
+        background: white;
+        border-color: rgba(148, 163, 184, 0.6);
+        color: #1e293b;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
       }
 
       .toolbar-btn:active {
-        background: #ddd;
+        background: rgba(248, 250, 252, 0.9);
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
       }
 
       .zoom-level {
-        margin: 0 10px;
+        margin: 0 12px;
         font-size: 14px;
-        font-weight: bold;
-        color: #333;
-        min-width: 50px;
+        font-weight: 700;
+        color: #4f46e5;
+        min-width: 55px;
         text-align: center;
+        background: rgba(79, 70, 229, 0.1);
+        padding: 4px 8px;
+        border-radius: 6px;
+        border: 1px solid rgba(79, 70, 229, 0.2);
       }
 
-      /* 工具栏提示样式 */
+      /* 工具栏提示样式 - 现代化设计 */
       .toolbar-hint {
         position: absolute;
-        bottom: -30px;
+        bottom: -36px;
         left: 0;
         width: 100%;
         text-align: center;
-        font-size: 12px;
-        color: #666;
-        background: #f8f9fa;
-        padding: 5px 10px;
-        border-top: 1px solid #eee;
-        border-radius: 0 0 8px 8px;
+        font-size: 13px;
+        color: #64748b;
+        background: rgba(248, 250, 252, 0.95);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        padding: 8px 12px;
+        border-top: 1px solid rgba(226, 232, 240, 0.6);
+        border-radius: 0 0 12px 12px;
         z-index: 998;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(226, 232, 240, 0.5);
+        border-top: none;
       }
 
       .hint-text {
-        display: inline-block;
-        animation: hint-pulse 2s infinite;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        animation: hint-glow 3s ease-in-out infinite;
+        font-weight: 500;
       }
 
-      @keyframes hint-pulse {
-        0% { opacity: 0.7; }
-        50% { opacity: 1; }
-        100% { opacity: 0.7; }
+      .hint-text::before {
+        content: "💡";
+        font-size: 14px;
+      }
+
+      @keyframes hint-glow {
+        0%, 100% {
+          opacity: 0.9;
+          transform: translateY(0);
+        }
+        50% {
+          opacity: 1;
+          transform: translateY(-1px);
+          text-shadow: 0 0 8px rgba(79, 70, 229, 0.2);
+        }
       }
 
       /* 响应式设计 */
