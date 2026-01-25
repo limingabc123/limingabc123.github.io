@@ -177,13 +177,13 @@ class PDFViewer {
 
       .pdf-viewer-container {
         width: 100%;
-        max-width: 1200px;
+        max-width: 1600px;
         max-height: 800px;
         margin: 0 auto;
         background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
         border-radius: 12px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
-        padding: 20px;
+        padding: 12px;
         overflow-y: auto;
         overflow-x: hidden;
         margin-left: 0;
@@ -1041,13 +1041,13 @@ class PDFViewer {
 
       // 计算容器可用宽度（减去padding和滚动条宽度）
       const containerWidth = this.viewerContainer.clientWidth;
-      const availableWidth = Math.max(containerWidth - 20, 100); // 至少100px
+      const availableWidth = Math.max(containerWidth, 100); // 至少100px
 
       // 计算缩放比例以适应容器宽度
       const calculatedScale = availableWidth / originalWidth;
 
-      // 限制缩放比例范围（最小1.0，最大3.0）
-      adaptiveScale = Math.max(1.0, Math.min(3.0, calculatedScale));
+      // 限制缩放比例范围（最小0.8，最大4.0）
+      adaptiveScale = Math.max(0.8, Math.min(4.0, calculatedScale));
 
       // 保留一位小数
       adaptiveScale = Math.round(adaptiveScale * 10) / 10;
