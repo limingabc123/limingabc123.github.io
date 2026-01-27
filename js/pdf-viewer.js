@@ -43,7 +43,7 @@ class PDFViewer {
     console.log('PDFViewer: init() 开始');
     try {
       // 配置PDF.js worker
-      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.2.67/build/pdf.worker.min.js';
       console.log('PDFViewer: PDF.js worker 配置完成');
 
       // 创建UI结构

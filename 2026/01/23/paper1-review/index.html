@@ -37,7 +37,7 @@
 <li><strong>Viewing</strong>: Scroll to read, progress indicator shows reading progress</li>
 </ul>
 <h2 id="PDF-Document"><a href="#PDF-Document" class="headerlink" title="PDF Document"></a>PDF Document</h2>
-    <div id="pdf-viewer-1769500587692-ivrq2xvwt" class="pdf-embed-container">
+    <div id="pdf-viewer-1769517722639-xt766cpuy" class="pdf-embed-container">
       <div class="pdf-loading">
         <div>正在加载PDF文档: paper1.pdf</div>
         <div class="loading-spinner"></div>
@@ -47,14 +47,14 @@
       document.addEventListener('DOMContentLoaded', function() {
         // 等待页面完全加载
         setTimeout(function() {
-          const container = document.getElementById('pdf-viewer-1769500587692-ivrq2xvwt');
+          const container = document.getElementById('pdf-viewer-1769517722639-xt766cpuy');
           if (!container) return;
 
           // 检查是否已经加载过PDF.js
           if (typeof pdfjsLib === 'undefined') {
             // 动态加载PDF.js库
             const pdfjsScript = document.createElement('script');
-            pdfjsScript.src = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js';
+            pdfjsScript.src = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.2.67/build/pdf.min.js';
             pdfjsScript.onload = function() {
               // 加载PDF查看器脚本
               loadPDFViewer();
@@ -88,7 +88,7 @@
               }
 
               // 初始化PDF查看器
-              new PDFViewer('pdf-viewer-1769500587692-ivrq2xvwt', '/pdfs/paper1.pdf');
+              new PDFViewer('pdf-viewer-1769517722639-xt766cpuy', '/pdfs/paper1.pdf');
             } catch (error) {
               console.error('PDF查看器初始化失败:', error);
               container.innerHTML = '<div style="color: red; padding: 20px; text-align: center;">PDF查看器初始化失败: ' + error.message + '</div>';
