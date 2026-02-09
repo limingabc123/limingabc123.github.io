@@ -245,7 +245,7 @@ class PDFViewer {
 
       .pdf-page-canvas {
         display: block;
-        margin: 0 0 24px 0;
+        margin: 0 auto 24px auto;
         border: 1px solid rgba(226, 232, 240, 0.9);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
         max-width: 100%;
