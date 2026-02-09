@@ -1821,16 +1821,17 @@ class PDFViewer {
   }
 
   addAnnotationListeners(canvas) {
-    canvas.addEventListener('mousedown', this.handleAnnotationMouseDown);
-    canvas.addEventListener('mousemove', this.handleAnnotationMouseMove);
-    canvas.addEventListener('mouseup', this.handleAnnotationMouseUp);
-
-    // 绑定this上下文
+    // 创建绑定了this上下文的事件处理函数
     canvas._annotationHandlers = {
       mousedown: this.handleAnnotationMouseDown.bind(this),
       mousemove: this.handleAnnotationMouseMove.bind(this),
       mouseup: this.handleAnnotationMouseUp.bind(this)
     };
+
+    // 使用绑定的处理函数添加事件监听器
+    canvas.addEventListener('mousedown', canvas._annotationHandlers.mousedown);
+    canvas.addEventListener('mousemove', canvas._annotationHandlers.mousemove);
+    canvas.addEventListener('mouseup', canvas._annotationHandlers.mouseup);
   }
 
   removeAnnotationListeners(canvas) {
