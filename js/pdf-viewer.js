@@ -177,16 +177,15 @@ class PDFViewer {
 
       .pdf-viewer-container {
         width: 100%;
-        max-width: 1600px;
+        max-width: none;
         max-height: 800px;
-        margin: 0 auto;
+        margin: 0;
         background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
         border-radius: 12px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
-        padding: 12px;
+        padding: 8px;
         overflow-y: auto;
         overflow-x: hidden;
-        margin-left: 0;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         border: 1px solid rgba(226, 232, 240, 0.8);
       }
@@ -246,7 +245,7 @@ class PDFViewer {
 
       .pdf-page-canvas {
         display: block;
-        margin: 0 auto 24px auto;
+        margin: 0 0 24px 0;
         border: 1px solid rgba(226, 232, 240, 0.9);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
         max-width: 100%;
