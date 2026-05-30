@@ -10745,6 +10745,16 @@ body > .section {
   right: 0;
   top: 0;
 }
+.image.is-autoheight {
+  padding-top: 0;
+  display: flex;
+}
+.image.is-autoheight img {
+  position: relative;
+  width: 100%;
+  height: auto !important;
+  object-fit: contain;
+}
 .image .avatar {
   height: 100%;
   object-fit: cover;
