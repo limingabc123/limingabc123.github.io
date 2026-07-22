@@ -175,7 +175,7 @@
         <textarea id="setting-prompt" rows="4">' +
       escapeHtml(state.config.systemPrompt || CONFIG.defaultSystemPrompt) +
       '</textarea>\
-        <div class="hint">Defines the AI assistant's role and behavior</div>\
+        <div class="hint">Defines the AI assistant\'s role and behavior</div>\
       </div>\
       <div class="settings-status" id="settings-status"></div>\
       <div class="settings-actions">\
