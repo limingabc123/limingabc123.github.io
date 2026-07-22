@@ -123,16 +123,20 @@
   function buildWidget() {
     var html =
       '\
-<button id="chat-toggle" aria-label="Open chat">\
-  <span class="chat-icon">💬</span>\
+<div id="floating-bot" aria-label="Open chat">\
+  <div class="floating-bot-inner">\
+    <img src="/images/Bot.png" alt="Ming\'s Assistant" class="bot-avatar-img">\
+    <span class="floating-label">Li Ming\'s<br>Dedicated Research Assistant</span>\
+  </div>\
   <span class="close-icon">✕</span>\
-</button>\
+</div>\
 <div id="chat-panel">\
   <div id="chat-header">\
     <div class="header-left">\
-      <div class="avatar">🤖</div>\
+      <div class="avatar"><img src="/images/Bot.png" alt="Bot" class="bot-avatar-img"></div>\
       <div class="header-info">\
-        <h3>Ming's Assistant</h3>\
+        <h3>Ming\'s Assistant</h3>\
+        <div class="header-subtitle">Li Ming\'s Dedicated Research Assistant</div>\
         <div class="status"><span class="dot"></span>Online</div>\
       </div>\
     </div>\
@@ -193,7 +197,7 @@
 
   // ---- Cache DOM refs ----
   function cacheElements() {
-    els.toggle = document.getElementById('chat-toggle');
+    els.floatingBot = document.getElementById('floating-bot');
     els.panel = document.getElementById('chat-panel');
     els.messages = document.getElementById('chat-messages');
     els.input = document.getElementById('chat-input');
@@ -213,7 +217,7 @@
 
   // ---- Bind events ----
   function bindEvents() {
-    els.toggle.addEventListener('click', togglePanel);
+    els.floatingBot.addEventListener('click', togglePanel);
     els.btnClosePanel.addEventListener('click', closePanel);
     els.btnSettings.addEventListener('click', openSettings);
     els.btnCloseSettings.addEventListener('click', closeSettings);
@@ -243,7 +247,7 @@
       if (
         state.isOpen &&
         !els.panel.contains(e.target) &&
-        !els.toggle.contains(e.target)
+        !els.floatingBot.contains(e.target)
       ) {
         closePanel();
       }
@@ -262,7 +266,7 @@
   function openPanel() {
     state.isOpen = true;
     els.panel.classList.add('open');
-    els.toggle.classList.add('active');
+    els.floatingBot.classList.add('active');
     scrollToBottom();
     els.input.focus();
   }
@@ -270,7 +274,7 @@
   function closePanel() {
     state.isOpen = false;
     els.panel.classList.remove('open');
-    els.toggle.classList.remove('active');
+    els.floatingBot.classList.remove('active');
     closeSettings();
   }
 
@@ -362,7 +366,15 @@
 
     var avatar = document.createElement('div');
     avatar.className = 'msg-avatar';
-    avatar.textContent = role === 'user' ? '👤' : '🤖';
+    if (role === 'bot') {
+      var img = document.createElement('img');
+      img.src = '/images/Bot.png';
+      img.alt = 'Bot';
+      img.className = 'bot-avatar-img';
+      avatar.appendChild(img);
+    } else {
+      avatar.textContent = '👤';
+    }
 
     var bubble = document.createElement('div');
     bubble.className = 'msg-content';

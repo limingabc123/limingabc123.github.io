@@ -2,49 +2,123 @@
    Liming's Chat Widget Styles
    ============================================ */
 
-/* Toggle Button */
-#chat-toggle {
+/* Floating Bot Character */
+#floating-bot {
   position: fixed;
-  bottom: 30px;
-  right: 30px;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #4A90D9, #357ABD);
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 4px 20px rgba(74, 144, 217, 0.4);
   z-index: 9999;
+  cursor: pointer;
+  animation: floatWander 35s ease-in-out infinite;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  bottom: 40px;
+  right: 45px;
+  transition: transform 0.3s;
+  user-select: none;
+}
+#floating-bot:hover {
+  animation-play-state: paused;
+}
+#floating-bot:active {
+  transform: scale(0.92);
+}
+#floating-bot .floating-bot-inner {
+  animation: gentleFloat 4s ease-in-out infinite;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#floating-bot .bot-avatar-img {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 4px 25px rgba(74, 144, 217, 0.45);
+  border: 3px solid #fff;
+  transition: box-shadow 0.3s, filter 0.3s;
+}
+#floating-bot:hover .bot-avatar-img {
+  box-shadow: 0 6px 35px rgba(74, 144, 217, 0.65);
+  filter: brightness(1.08);
+}
+#floating-bot .floating-label {
+  position: absolute;
+  top: -52px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.78);
+  color: #fff;
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-size: 11px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s, transform 0.35s;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  line-height: 1.4;
+  text-align: center;
+  backdrop-filter: blur(4px);
+}
+#floating-bot .floating-label::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid rgba(0, 0, 0, 0.78);
+}
+#floating-bot:hover .floating-label {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+#floating-bot .close-icon {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 26px;
+  height: 26px;
+  background: #ef4444;
+  color: #fff;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 28px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-#chat-toggle:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 25px rgba(74, 144, 217, 0.55);
-}
-#chat-toggle:active {
-  transform: scale(0.95);
-}
-#chat-toggle .chat-icon,
-#chat-toggle .close-icon {
+  font-size: 13px;
+  font-weight: bold;
+  opacity: 0;
   transition: opacity 0.3s, transform 0.3s;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+  transform: scale(0.5);
 }
-#chat-toggle .close-icon {
-  position: absolute;
-  opacity: 0;
-  transform: rotate(-90deg);
-}
-#chat-toggle.active .chat-icon {
-  opacity: 0;
-  transform: rotate(90deg);
-}
-#chat-toggle.active .close-icon {
+#floating-bot.active .close-icon {
   opacity: 1;
-  transform: rotate(0);
+  transform: scale(1);
+}
+
+@keyframes floatWander {
+  0% { transform: translate(0px, 0px) rotate(0deg); }
+  8% { transform: translate(40px, -35px) rotate(2deg); }
+  16% { transform: translate(65px, -10px) rotate(-1deg); }
+  24% { transform: translate(45px, -55px) rotate(3deg); }
+  32% { transform: translate(10px, -75px) rotate(-2deg); }
+  40% { transform: translate(-25px, -50px) rotate(2deg); }
+  48% { transform: translate(-55px, -65px) rotate(-1deg); }
+  56% { transform: translate(-70px, -30px) rotate(3deg); }
+  64% { transform: translate(-45px, 0px) rotate(-2deg); }
+  72% { transform: translate(-15px, -20px) rotate(1deg); }
+  80% { transform: translate(10px, -50px) rotate(-1deg); }
+  88% { transform: translate(30px, -25px) rotate(2deg); }
+  96% { transform: translate(15px, -5px) rotate(-1deg); }
+  100% { transform: translate(0px, 0px) rotate(0deg); }
+}
+@keyframes gentleFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
 }
 
 /* Chat Panel */
@@ -103,6 +177,20 @@
   align-items: center;
   justify-content: center;
   font-size: 20px;
+  overflow: hidden;
+}
+#chat-header .avatar .bot-avatar-img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+#chat-header .header-subtitle {
+  font-size: 10.5px;
+  opacity: 0.85;
+  line-height: 1.3;
+  font-style: italic;
+  margin-bottom: 1px;
 }
 #chat-header .header-info h3 {
   margin: 0;
@@ -208,6 +296,13 @@
 }
 .message.bot .msg-avatar {
   background: #e8ecf1;
+  overflow: hidden;
+}
+.message.bot .msg-avatar .bot-avatar-img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 .message .msg-content {
   padding: 10px 14px;
@@ -540,11 +635,30 @@
     max-height: 100vh;
     border-radius: 0;
   }
-  #chat-toggle {
+  #floating-bot {
     bottom: 20px;
-    right: 20px;
-    width: 54px;
-    height: 54px;
-    font-size: 24px;
+    right: 25px;
+  }
+  #floating-bot .bot-avatar-img {
+    width: 56px;
+    height: 56px;
+  }
+  #floating-bot .floating-label {
+    font-size: 10px;
+    padding: 4px 10px;
+    top: -46px;
+  }
+  @keyframes floatWander {
+    0% { transform: translate(0px, 0px) rotate(0deg); }
+    10% { transform: translate(25px, -25px) rotate(2deg); }
+    20% { transform: translate(40px, -5px) rotate(-1deg); }
+    30% { transform: translate(25px, -35px) rotate(3deg); }
+    40% { transform: translate(5px, -45px) rotate(-2deg); }
+    50% { transform: translate(-15px, -30px) rotate(2deg); }
+    60% { transform: translate(-30px, -40px) rotate(-1deg); }
+    70% { transform: translate(-40px, -15px) rotate(3deg); }
+    80% { transform: translate(-25px, 0px) rotate(-2deg); }
+    90% { transform: translate(-5px, -10px) rotate(1deg); }
+    100% { transform: translate(0px, 0px) rotate(0deg); }
   }
 }
