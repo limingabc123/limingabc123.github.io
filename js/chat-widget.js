@@ -1,13 +1,15 @@
 /* ============================================
    Liming's Chat Widget - AI Assistant
-   Supports OpenAI-compatible API (DeepSeek, etc.)
+   架构：前端 → Cloudflare Worker 代理 → DeepSeek API
+   API Key 仅存储在 Worker 环境变量中，前端不可见
    ============================================ */
 (function () {
   'use strict';
 
   // ---- Configuration ----
   var CONFIG = {
-    defaultEndpoint: 'https://api.deepseek.com/v1/chat/completions',
+    // Cloudflare Worker 代理地址（API Key 在服务端，前端不可见）
+    defaultEndpoint: 'https://liming-chat-proxy.limingabc.workers.dev',
     defaultModel: 'deepseek-chat',
     defaultSystemPrompt:
       '你是Liming（李明）的个人AI小助理。你的职责是帮助访问Liming个人主页的访客了解Liming的背景、研究方向和成就。请用中文回复，语气友好、专业、热情。你了解以下关于Liming的信息：\n' +
@@ -55,10 +57,27 @@
       var saved = localStorage.getItem(CONFIG.configKey);
       if (saved) {
         state.config = JSON.parse(saved);
+        // 迁移：旧版 config 可能包含 apiKey，新版全部走后端代理
+        if (state.config.apiKey) {
+          delete state.config.apiKey;
+        }
+        // 迁移：旧版 endpoint 指向了 DeepSeek 直连，改成默认占位
+        if (
+          state.config.endpoint &&
+          state.config.endpoint.indexOf('api.deepseek.com') !== -1
+        ) {
+          state.config.endpoint = CONFIG.defaultEndpoint;
+        }
+        if (
+          state.config.endpoint &&
+          state.config.endpoint.indexOf('api.openai.com') !== -1
+        ) {
+          state.config.endpoint = CONFIG.defaultEndpoint;
+        }
+        saveConfig();
       } else {
         state.config = {
           endpoint: CONFIG.defaultEndpoint,
-          apiKey: '',
           model: CONFIG.defaultModel,
           systemPrompt: CONFIG.defaultSystemPrompt,
         };
@@ -66,7 +85,6 @@
     } catch (e) {
       state.config = {
         endpoint: CONFIG.defaultEndpoint,
-        apiKey: '',
         model: CONFIG.defaultModel,
         systemPrompt: CONFIG.defaultSystemPrompt,
       };
@@ -139,14 +157,7 @@
         <input type="url" id="setting-endpoint" value="' +
       escapeHtml(state.config.endpoint || CONFIG.defaultEndpoint) +
       '" />\
-        <div class="hint">兼容 OpenAI 格式的 API 地址</div>\
-      </div>\
-      <div class="setting-group">\
-        <label>API Key</label>\
-        <input type="password" id="setting-apikey" value="' +
-      escapeHtml(state.config.apiKey || '') +
-      '" placeholder="sk-..." />\
-        <div class="hint">你的 API 密钥，仅存储在本地浏览器</div>\
+        <div class="hint">部署的 Cloudflare Worker 地址</div>\
       </div>\
       <div class="setting-group">\
         <label>模型名称</label>\
@@ -195,7 +206,6 @@
     els.btnClear = document.getElementById('btn-clear-chat');
     els.btnReset = document.getElementById('btn-reset-settings');
     els.settingEndpoint = document.getElementById('setting-endpoint');
-    els.settingApiKey = document.getElementById('setting-apikey');
     els.settingModel = document.getElementById('setting-model');
     els.settingPrompt = document.getElementById('setting-prompt');
     els.settingsStatus = document.getElementById('settings-status');
@@ -277,7 +287,6 @@
 
   function saveSettings() {
     state.config.endpoint = els.settingEndpoint.value.trim() || CONFIG.defaultEndpoint;
-    state.config.apiKey = els.settingApiKey.value.trim();
     state.config.model = els.settingModel.value.trim() || CONFIG.defaultModel;
     state.config.systemPrompt = els.settingPrompt.value.trim() || CONFIG.defaultSystemPrompt;
     saveConfig();
@@ -291,12 +300,10 @@
   function resetSettings() {
     state.config = {
       endpoint: CONFIG.defaultEndpoint,
-      apiKey: '',
       model: CONFIG.defaultModel,
       systemPrompt: CONFIG.defaultSystemPrompt,
     };
     els.settingEndpoint.value = CONFIG.defaultEndpoint;
-    els.settingApiKey.value = '';
     els.settingModel.value = CONFIG.defaultModel;
     els.settingPrompt.value = CONFIG.defaultSystemPrompt;
     saveConfig();
@@ -408,9 +415,9 @@
     var welcome = els.messages.querySelector('.welcome-msg');
     if (welcome) welcome.remove();
 
-    // Check if API key is configured
-    if (!state.config.apiKey) {
-      appendMessageUI('error', '⚠️ 请先在设置中配置 API Key 后再发送消息。');
+    // Check if endpoint is configured
+    if (!state.config.endpoint || state.config.endpoint.indexOf('YOUR-WORKER') !== -1) {
+      appendMessageUI('error', '⚠️ 请先在设置中配置后端代理地址（Cloudflare Worker URL）。');
       return;
     }
 
@@ -474,22 +481,20 @@
       });
   }
 
-  // ---- API Call (with streaming support) ----
+  // ---- API Call (通过后端代理，API Key 在服务端) ----
   function callAPI(apiMessages) {
     return new Promise(function (resolve, reject) {
       var endpoint = state.config.endpoint || CONFIG.defaultEndpoint;
-      var apiKey = state.config.apiKey;
       var model = state.config.model || CONFIG.defaultModel;
 
-      if (!apiKey) {
-        reject(new Error('请先在设置中配置 API Key'));
+      if (!endpoint) {
+        reject(new Error('请先在设置中配置后端代理地址'));
         return;
       }
 
       var xhr = new XMLHttpRequest();
       xhr.open('POST', endpoint, true);
       xhr.setRequestHeader('Content-Type', 'application/json');
-      xhr.setRequestHeader('Authorization', 'Bearer ' + apiKey);
 
       xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
@@ -525,7 +530,7 @@
       };
 
       xhr.onerror = function () {
-        reject(new Error('网络请求失败，请检查网络连接和API地址是否正确'));
+        reject(new Error('网络请求失败，请检查代理地址是否正确'));
       };
 
       xhr.ontimeout = function () {
