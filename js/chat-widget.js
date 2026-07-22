@@ -1,7 +1,7 @@
 /* ============================================
-   Liming's Chat Widget - AI Assistant
-   架构：前端 → Cloudflare Worker 代理 → DeepSeek API
-   API Key 仅存储在 Worker 环境变量中，前端不可见
+   Ming's Chat Widget - AI Assistant
+   Architecture: Browser → Cloudflare Worker → DeepSeek API
+   API Key stored in Worker env vars, never exposed to frontend
    ============================================ */
 (function () {
   'use strict';
@@ -12,16 +12,16 @@
     defaultEndpoint: 'https://liming-chat-proxy.limingabc.workers.dev',
     defaultModel: 'deepseek-chat',
     defaultSystemPrompt:
-      '你是Liming（李明）的个人AI小助理。你的职责是帮助访问Liming个人主页的访客了解Liming的背景、研究方向和成就。请用中文回复，语气友好、专业、热情。你了解以下关于Liming的信息：\n' +
-      '- Liming（李明）目前是西安电子科技大学通信工程学院的博士研究生，师从Nan Cheng教授\n' +
-      '- 她是UNIC（Ubiquitous Networking and Intelligent Computing Lab）实验室的成员\n' +
-      '- 她在河南师范大学获得了计算机科学与技术硕士学位，师从Peiyan Yuan教授\n' +
-      '- 她曾在xFusion Digital Co., Ltd.和郑州财经学院工作\n' +
-      '- 主要研究方向：生成式AI、AI驱动的智能通信系统插件开发、基于Lyapunov的深度强化学习用于资源分配\n' +
-      '- 研究应用场景：V2X网络、卫星通信、航空通信、移动通信\n' +
-      '- 技术技能：C、Java、Go、PHP、MATLAB、Python、HTML5、CSS3、JavaScript、Git、RAG\n' +
-      '- 她发表了多篇论文，包括IEEE Transactions on Emerging Topics in Computing等期刊\n' +
-      '请根据以上信息回答访客的问题。如果被问到不清楚的信息，请诚实地说不知道。',
+      'You are the personal AI assistant of Ming Li (李茗). Your role is to help visitors of Ming Li\'s personal homepage learn about her background, research interests, and achievements. Please reply in English with a friendly, professional, and enthusiastic tone. Here is what you know about Ming Li:\n' +
+      '- Ming Li (李茗) is currently a Ph.D. student at the School of Communication Engineering, Xidian University, supervised by Prof. Nan Cheng\n' +
+      '- She is a member of the UNIC Lab (Ubiquitous Networking and Intelligent Computing Lab)\n' +
+      '- She earned her M.S. degree in Computer Science and Technology from Henan Normal University, supervised by Prof. Peiyan Yuan\n' +
+      '- She has worked at xFusion Digital Co., Ltd. and Zhengzhou College of Finance and Economics\n' +
+      '- Main research areas: Generative AI, AI-driven plug-in development for intelligent communication systems, Lyapunov-based deep reinforcement learning for resource allocation\n' +
+      '- Application scenarios: V2X networks, satellite communications, aviation communications, mobile communications\n' +
+      '- Technical skills: C, Java, Go, PHP, MATLAB, Python, HTML5, CSS3, JavaScript, Git, RAG\n' +
+      '- She has published multiple papers, including in IEEE Transactions on Emerging Topics in Computing and other journals\n' +
+      'Please answer visitors\' questions based on the information above. If asked about something you don\'t know, honestly say so.',
     storageKey: 'liming_chat_history',
     configKey: 'liming_chat_config',
   };
@@ -123,7 +123,7 @@
   function buildWidget() {
     var html =
       '\
-<button id="chat-toggle" aria-label="打开聊天">\
+<button id="chat-toggle" aria-label="Open chat">\
   <span class="chat-icon">💬</span>\
   <span class="close-icon">✕</span>\
 </button>\
@@ -132,24 +132,24 @@
     <div class="header-left">\
       <div class="avatar">🤖</div>\
       <div class="header-info">\
-        <h3>Liming的小助理</h3>\
-        <div class="status"><span class="dot"></span>在线</div>\
+        <h3>Ming's Assistant</h3>\
+        <div class="status"><span class="dot"></span>Online</div>\
       </div>\
     </div>\
     <div class="header-actions">\
-      <button id="btn-settings" title="设置" aria-label="设置">⚙️</button>\
-      <button id="btn-close-panel" title="关闭" aria-label="关闭">✕</button>\
+      <button id="btn-settings" title="Settings" aria-label="Settings">⚙️</button>\
+      <button id="btn-close-panel" title="Close" aria-label="Close">✕</button>\
     </div>\
   </div>\
   <div id="chat-messages"></div>\
   <div id="chat-input-area">\
-    <textarea id="chat-input" rows="1" placeholder="输入消息..." aria-label="输入消息"></textarea>\
-    <button id="chat-send" aria-label="发送">➤</button>\
+    <textarea id="chat-input" rows="1" placeholder="Type a message..." aria-label="Type a message"></textarea>\
+    <button id="chat-send" aria-label="Send">➤</button>\
   </div>\
   <div id="chat-settings">\
     <div class="settings-header">\
-      <h3>⚙️ 设置</h3>\
-      <button id="btn-close-settings" aria-label="关闭设置">✕</button>\
+      <h3>⚙️ Settings</h3>\
+      <button id="btn-close-settings" aria-label="Close settings">✕</button>\
     </div>\
     <div class="settings-body">\
       <div class="setting-group">\
@@ -157,29 +157,29 @@
         <input type="url" id="setting-endpoint" value="' +
       escapeHtml(state.config.endpoint || CONFIG.defaultEndpoint) +
       '" />\
-        <div class="hint">部署的 Cloudflare Worker 地址</div>\
+        <div class="hint">Your Cloudflare Worker URL</div>\
       </div>\
       <div class="setting-group">\
-        <label>模型名称</label>\
+        <label>Model</label>\
         <input type="text" id="setting-model" value="' +
       escapeHtml(state.config.model || CONFIG.defaultModel) +
       '" />\
-        <div class="hint">如 deepseek-chat, gpt-4o, qwen-plus 等</div>\
+        <div class="hint">e.g. deepseek-chat, gpt-4o, qwen-plus</div>\
       </div>\
       <div class="setting-group">\
-        <label>系统提示词</label>\
+        <label>System Prompt</label>\
         <textarea id="setting-prompt" rows="4">' +
       escapeHtml(state.config.systemPrompt || CONFIG.defaultSystemPrompt) +
       '</textarea>\
-        <div class="hint">定义 AI 助手的角色和行为</div>\
+        <div class="hint">Defines the AI assistant's role and behavior</div>\
       </div>\
       <div class="settings-status" id="settings-status"></div>\
       <div class="settings-actions">\
-        <button class="btn-save" id="btn-save-settings">💾 保存设置</button>\
-        <button class="btn-clear" id="btn-clear-chat">🗑️ 清空对话</button>\
+        <button class="btn-save" id="btn-save-settings">💾 Save</button>\
+        <button class="btn-clear" id="btn-clear-chat">🗑️ Clear</button>\
       </div>\
       <div class="settings-actions" style="margin-top: 6px;">\
-        <button class="btn-reset" id="btn-reset-settings" style="flex: 1;">↺ 恢复默认</button>\
+        <button class="btn-reset" id="btn-reset-settings" style="flex: 1;">↺ Reset</button>\
       </div>\
     </div>\
   </div>\
@@ -290,7 +290,7 @@
     state.config.model = els.settingModel.value.trim() || CONFIG.defaultModel;
     state.config.systemPrompt = els.settingPrompt.value.trim() || CONFIG.defaultSystemPrompt;
     saveConfig();
-    showSettingsStatus('✅ 设置已保存', 'success');
+    showSettingsStatus('✅ Settings saved', 'success');
     // Add a small delay then close settings
     setTimeout(function () {
       closeSettings();
@@ -307,7 +307,7 @@
     els.settingModel.value = CONFIG.defaultModel;
     els.settingPrompt.value = CONFIG.defaultSystemPrompt;
     saveConfig();
-    showSettingsStatus('✅ 已恢复默认设置', 'success');
+    showSettingsStatus('✅ Reset to defaults', 'success');
   }
 
   function showSettingsStatus(msg, type) {
@@ -322,7 +322,7 @@
     saveHistory();
     els.messages.innerHTML = '';
     addWelcomeMessage();
-    showSettingsStatus('✅ 对话已清空', 'success');
+    showSettingsStatus('✅ Chat cleared', 'success');
   }
 
   // ---- Welcome Message ----
@@ -331,8 +331,8 @@
     div.className = 'welcome-msg';
     div.innerHTML =
       '<div class="welcome-icon">👋</div>' +
-      '<h4>你好！我是 Liming 的小助理 🤖</h4>' +
-      '<p>我可以帮你了解Liming的背景、研究方向、论文发表等信息。<br>有什么想问的吗？</p>';
+      '<h4>Hello! I\'m Ming\'s Assistant 🤖</h4>' +
+      '<p>I can help you learn about Ming Li\'s background, research, publications, and more.<br>What would you like to know?</p>';
     els.messages.appendChild(div);
   }
 
@@ -417,7 +417,7 @@
 
     // Check if endpoint is configured
     if (!state.config.endpoint || state.config.endpoint.indexOf('YOUR-WORKER') !== -1) {
-      appendMessageUI('error', '⚠️ 请先在设置中配置后端代理地址（Cloudflare Worker URL）。');
+      appendMessageUI('error', '⚠️ Please configure the backend proxy (Cloudflare Worker URL) in Settings first.');
       return;
     }
 
@@ -488,7 +488,7 @@
       var model = state.config.model || CONFIG.defaultModel;
 
       if (!endpoint) {
-        reject(new Error('请先在设置中配置后端代理地址'));
+        reject(new Error('Please configure the backend proxy in Settings first'));
         return;
       }
 
@@ -509,13 +509,13 @@
               if (text) {
                 resolve(text);
               } else {
-                reject(new Error('API 返回格式异常'));
+                reject(new Error('Unexpected API response format'));
               }
             } catch (e) {
-              reject(new Error('解析响应失败: ' + e.message));
+              reject(new Error('Failed to parse response: ' + e.message));
             }
           } else {
-            var errMsg = 'API 请求失败 (HTTP ' + xhr.status + ')';
+            var errMsg = 'API request failed (HTTP ' + xhr.status + ')';
             try {
               var errResp = JSON.parse(xhr.responseText);
               if (errResp.error && errResp.error.message) {
@@ -530,11 +530,11 @@
       };
 
       xhr.onerror = function () {
-        reject(new Error('网络请求失败，请检查代理地址是否正确'));
+        reject(new Error('Network error. Please check your proxy URL.'));
       };
 
       xhr.ontimeout = function () {
-        reject(new Error('请求超时，请稍后重试'));
+        reject(new Error('Request timed out. Please try again.'));
       };
 
       xhr.timeout = 60000;
