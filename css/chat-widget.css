@@ -7,7 +7,7 @@
   position: fixed;
   z-index: 9999;
   cursor: pointer;
-  animation: floatWander 60s ease-in-out infinite;
+  animation: floatWander 90s ease-in-out infinite;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -30,35 +30,35 @@
   align-items: center;
 }
 #floating-bot .bot-avatar-img {
-  width: 100px;
-  height: 100px;
+  width: 130px;
+  height: 130px;
   border-radius: 50%;
   object-fit: cover;
-  box-shadow: 0 6px 35px rgba(74, 144, 217, 0.5);
-  border: 4px solid #fff;
+  box-shadow: 0 8px 40px rgba(74, 144, 217, 0.5);
+  border: 5px solid #fff;
   transition: box-shadow 0.3s, filter 0.3s;
 }
 #floating-bot:hover .bot-avatar-img {
-  box-shadow: 0 10px 45px rgba(74, 144, 217, 0.7);
+  box-shadow: 0 12px 50px rgba(74, 144, 217, 0.7);
   filter: brightness(1.08);
 }
 #floating-bot .floating-label {
   position: absolute;
-  bottom: -52px;
+  bottom: -58px;
   left: 50%;
   transform: translateX(-50%);
   background: rgba(0, 0, 0, 0.78);
   color: #fff;
-  padding: 6px 14px;
-  border-radius: 8px;
-  font-size: 12px;
+  padding: 7px 16px;
+  border-radius: 10px;
+  font-size: 13px;
   white-space: nowrap;
   opacity: 1;
   pointer-events: none;
   transition: transform 0.35s;
   font-weight: 500;
   letter-spacing: 0.3px;
-  line-height: 1.4;
+  line-height: 1.5;
   text-align: center;
   backdrop-filter: blur(4px);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
@@ -66,26 +66,26 @@
 #floating-bot .floating-label::after {
   content: '';
   position: absolute;
-  top: -6px;
+  top: -7px;
   left: 50%;
   transform: translateX(-50%);
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-bottom: 6px solid rgba(0, 0, 0, 0.78);
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-bottom: 7px solid rgba(0, 0, 0, 0.78);
 }
 #floating-bot .close-icon {
   position: absolute;
-  top: -10px;
-  right: -10px;
-  width: 30px;
-  height: 30px;
+  top: -12px;
+  right: -12px;
+  width: 34px;
+  height: 34px;
   background: #ef4444;
   color: #fff;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: bold;
   opacity: 0;
   transition: opacity 0.3s, transform 0.3s;
@@ -99,15 +99,15 @@
 
 @keyframes floatWander {
   0% { transform: translate(0vw, 0vh) rotate(0deg); }
-  10% { transform: translate(calc(85vw - 120px), 3vh) rotate(3deg); }
-  20% { transform: translate(calc(40vw - 120px), calc(72vh - 150px)) rotate(-2deg); }
-  30% { transform: translate(calc(78vw - 120px), calc(40vh - 150px)) rotate(4deg); }
-  40% { transform: translate(calc(8vw - 120px), calc(78vh - 150px)) rotate(-3deg); }
-  50% { transform: translate(calc(65vw - 120px), calc(55vh - 150px)) rotate(2deg); }
-  60% { transform: translate(calc(18vw - 120px), calc(28vh - 150px)) rotate(-1deg); }
-  70% { transform: translate(calc(52vw - 120px), calc(85vh - 150px)) rotate(3deg); }
-  80% { transform: translate(calc(82vw - 120px), calc(15vh - 150px)) rotate(-2deg); }
-  90% { transform: translate(calc(28vw - 120px), calc(62vh - 150px)) rotate(2deg); }
+  10% { transform: translate(calc(82vw - 150px), 3vh) rotate(3deg); }
+  20% { transform: translate(calc(38vw - 150px), calc(72vh - 200px)) rotate(-2deg); }
+  30% { transform: translate(calc(75vw - 150px), calc(38vh - 200px)) rotate(4deg); }
+  40% { transform: translate(calc(5vw - 150px), calc(78vh - 200px)) rotate(-3deg); }
+  50% { transform: translate(calc(62vw - 150px), calc(52vh - 200px)) rotate(2deg); }
+  60% { transform: translate(calc(15vw - 150px), calc(25vh - 200px)) rotate(-1deg); }
+  70% { transform: translate(calc(48vw - 150px), calc(85vh - 200px)) rotate(3deg); }
+  80% { transform: translate(calc(78vw - 150px), calc(12vh - 200px)) rotate(-2deg); }
+  90% { transform: translate(calc(22vw - 150px), calc(58vh - 200px)) rotate(2deg); }
   100% { transform: translate(0vw, 0vh) rotate(0deg); }
 }
 @keyframes gentleFloat {
@@ -634,23 +634,23 @@
     left: 10px;
   }
   #floating-bot .bot-avatar-img {
-    width: 72px;
-    height: 72px;
+    width: 90px;
+    height: 90px;
   }
   #floating-bot .floating-label {
-    font-size: 10px;
-    padding: 4px 10px;
-    bottom: -44px;
+    font-size: 11px;
+    padding: 5px 12px;
+    bottom: -50px;
   }
   @keyframes floatWander {
     0% { transform: translate(0vw, 0vh) rotate(0deg); }
-    12% { transform: translate(calc(75vw - 90px), 3vh) rotate(2deg); }
-    24% { transform: translate(calc(30vw - 90px), calc(65vh - 110px)) rotate(-2deg); }
-    36% { transform: translate(calc(65vw - 90px), calc(35vh - 110px)) rotate(3deg); }
-    48% { transform: translate(calc(3vw - 90px), calc(70vh - 110px)) rotate(-3deg); }
-    60% { transform: translate(calc(50vw - 90px), calc(20vh - 110px)) rotate(1deg); }
-    72% { transform: translate(calc(15vw - 90px), calc(78vh - 110px)) rotate(-1deg); }
-    84% { transform: translate(calc(55vw - 90px), calc(50vh - 110px)) rotate(2deg); }
+    12% { transform: translate(calc(72vw - 110px), 3vh) rotate(2deg); }
+    24% { transform: translate(calc(28vw - 110px), calc(62vh - 140px)) rotate(-2deg); }
+    36% { transform: translate(calc(62vw - 110px), calc(32vh - 140px)) rotate(3deg); }
+    48% { transform: translate(calc(3vw - 110px), calc(68vh - 140px)) rotate(-3deg); }
+    60% { transform: translate(calc(48vw - 110px), calc(18vh - 140px)) rotate(1deg); }
+    72% { transform: translate(calc(12vw - 110px), calc(75vh - 140px)) rotate(-1deg); }
+    84% { transform: translate(calc(52vw - 110px), calc(48vh - 140px)) rotate(2deg); }
     100% { transform: translate(0vw, 0vh) rotate(0deg); }
   }
 }
