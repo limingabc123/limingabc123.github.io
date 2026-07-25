@@ -533,14 +533,21 @@
               reject(new Error('Failed to parse response: ' + e.message));
             }
           } else {
-            var errMsg = 'API request failed (HTTP ' + xhr.status + ')';
-            try {
-              var errResp = JSON.parse(xhr.responseText);
-              if (errResp.error && errResp.error.message) {
-                errMsg += ': ' + errResp.error.message;
+            var errMsg;
+            if (xhr.status === 0) {
+              errMsg = 'Request blocked (HTTP 0). ' +
+                'This is usually caused by a CORS issue or the Worker being unreachable. ' +
+                'Please check that the Cloudflare Worker is deployed and the DEEPSEEK_API_KEY is set.';
+            } else {
+              errMsg = 'API request failed (HTTP ' + xhr.status + ')';
+              try {
+                var errResp = JSON.parse(xhr.responseText);
+                if (errResp.error && errResp.error.message) {
+                  errMsg += ': ' + errResp.error.message;
+                }
+              } catch (e) {
+                /* ignore */
               }
-            } catch (e) {
-              /* ignore */
             }
             reject(new Error(errMsg));
           }
