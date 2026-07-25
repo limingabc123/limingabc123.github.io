@@ -10,7 +10,7 @@
   var CONFIG = {
     // Cloudflare Worker 代理地址（API Key 在服务端，前端不可见）
     defaultEndpoint: 'https://liming-chat-proxy.limingabc.workers.dev',
-    defaultModel: 'deepseek-chat',
+    defaultModel: 'deepseek-v4-pro',
     defaultSystemPrompt:
       'You are the personal AI assistant of Ming Li (李茗). Your role is to help visitors of Ming Li\'s personal homepage learn about her background, research interests, and achievements. Please reply in English with a friendly, professional, and enthusiastic tone. Here is what you know about Ming Li:\n' +
       '- Ming Li (李茗) is currently a Ph.D. student at the School of Communication Engineering, Xidian University, supervised by Prof. Nan Cheng\n' +
@@ -73,6 +73,10 @@
           state.config.endpoint.indexOf('api.openai.com') !== -1
         ) {
           state.config.endpoint = CONFIG.defaultEndpoint;
+        }
+        // 迁移：旧版模型名 deepseek-chat 已更名为 deepseek-v4-pro
+        if (state.config.model === 'deepseek-chat') {
+          state.config.model = CONFIG.defaultModel;
         }
         saveConfig();
       } else {
@@ -168,7 +172,7 @@
         <input type="text" id="setting-model" value="' +
       escapeHtml(state.config.model || CONFIG.defaultModel) +
       '" />\
-        <div class="hint">e.g. deepseek-chat, gpt-4o, qwen-plus</div>\
+        <div class="hint">e.g. deepseek-v4-pro, deepseek-v4-flash, gpt-4o</div>\
       </div>\
       <div class="setting-group">\
         <label>System Prompt</label>\
