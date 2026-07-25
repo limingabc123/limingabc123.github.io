@@ -459,22 +459,23 @@
     state.messages.push({ role: 'user', content: text });
     saveHistory();
 
-    // Add bot placeholder
-    var botEl = document.createElement('div');
-    botEl.className = 'message bot';
-    botEl.innerHTML =
-      '<div class="msg-avatar">🤖</div><div class="msg-content"></div>';
-    els.messages.appendChild(botEl);
-
-    var botContent = '';
     state.isLoading = true;
     els.send.disabled = true;
+
+    // Only show typing indicator while waiting (no empty bot bubble)
     showTypingIndicator();
 
     // Call API
     callAPI(apiMessages)
       .then(function (fullText) {
         removeTypingIndicator();
+        // Create bot message with proper avatar (not emoji placeholder)
+        var botEl = document.createElement('div');
+        botEl.className = 'message bot';
+        var botImg = '<img src="/images/Bot.png" alt="Bot" class="bot-avatar-img">';
+        botEl.innerHTML =
+          '<div class="msg-avatar">' + botImg + '</div><div class="msg-content"></div>';
+        els.messages.appendChild(botEl);
         updateBotMessage(botEl, fullText);
         state.messages.push({ role: 'assistant', content: fullText });
         saveHistory();
@@ -483,13 +484,18 @@
       })
       .catch(function (err) {
         removeTypingIndicator();
-        botEl.remove();
+        // Rollback: remove user message from UI
+        var userMsgs = els.messages.querySelectorAll('.message.user');
+        if (userMsgs.length > 0) {
+          userMsgs[userMsgs.length - 1].remove();
+        }
+        // Rollback: remove user message from state
+        state.messages.pop();
+        saveHistory();
+        // Show error
         appendMessageUI('error', '⚠️ ' + err.message);
         state.isLoading = false;
         els.send.disabled = false;
-        // Remove the user message from state since API failed
-        state.messages.pop();
-        saveHistory();
       });
   }
 
