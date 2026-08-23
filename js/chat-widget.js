@@ -9,7 +9,7 @@
   // ---- Configuration ----
   var CONFIG = {
     // Cloudflare Worker 代理地址（API Key 在服务端，前端不可见）
-    defaultEndpoint: 'https://liming-chat-proxy.limingabc.workers.dev',
+    defaultEndpoint: 'https://liming-chat-proxy.limingabc123.workers.dev',
     defaultModel: 'deepseek-v4-pro',
     defaultSystemPrompt:
       'You are the personal AI assistant of Ming Li (李茗). Your role is to help visitors of Ming Li\'s personal homepage learn about her background, research interests, and achievements. Please reply in English with a friendly, professional, and enthusiastic tone. Here is what you know about Ming Li:\n' +
