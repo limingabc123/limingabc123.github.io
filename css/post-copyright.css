@@ -1,0 +1,16 @@
+/* Independent copyright styles, shared by every theme variant. */
+.article .post-copyright { position:relative; isolation:isolate; overflow:hidden; box-sizing:border-box; margin:32px 0 24px; padding:20px 24px; border:0; border-radius:5px; background:#f5f5f5; color:#303640; font-size:14px; line-height:1.6; text-align:left; }
+.article .post-copyright > :not(.post-copyright-watermark) { position:relative; z-index:1; }
+.article .post-copyright .post-copyright-watermark { position:absolute; z-index:0; right:-18px; top:-55px; color:rgba(0,0,0,.055); font:700 210px/1.2 Georgia,serif; pointer-events:none; user-select:none; }
+.article .post-copyright-title { margin:0 0 3px; font-weight:500; overflow-wrap:anywhere; }
+.article .post-copyright-url { display:block; color:#738197; font-size:12px; overflow-wrap:anywhere; text-decoration:none; }
+.article .post-copyright-url:hover { text-decoration:underline; }
+.article .post-copyright-meta { display:flex; flex-wrap:wrap; gap:14px 28px; padding:0; margin:16px 0 0; }
+.article .post-copyright-meta > div { margin:0; padding:0; }
+.article .post-copyright-meta dt { margin:0 0 3px; font-size:12px; font-weight:400; color:#626b77; }
+.article .post-copyright-meta dd { margin:0; padding:0; font-size:14px; }
+.article .post-copyright-note { margin:14px 0 0; font-size:12px; color:#6b7280; }
+html[data-theme="dark"] .article .post-copyright { background:#2a303a; color:#dde3ee; }
+html[data-theme="dark"] .article .post-copyright :is(dt,.post-copyright-note,.post-copyright-url) { color:#b1bac9; }
+html[data-theme="dark"] .article .post-copyright-watermark { color:rgba(255,255,255,.05); }
+@media(max-width:480px) { .article .post-copyright { padding:16px; } .article .post-copyright-meta { gap:14px 18px; } .article .post-copyright-meta > div { min-width:40%; } }
