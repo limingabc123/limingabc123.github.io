@@ -1,0 +1,13 @@
+ .theme-toggle { border: 0; background: transparent; font: inherit; cursor: pointer; color: inherit; }
+.theme-toggle:focus-visible { outline: 2px solid #3273dc; outline-offset: -4px; }
+html[data-theme="dark"] { color-scheme: dark; background: #17191e; }
+html[data-theme="dark"] body { background: #17191e; color: #d8dde7; }
+html[data-theme="dark"] :is(.card,.navbar,.navbar-menu,.footer,.searchbox-container,.searchbox-body) { background: #22262e; color: #d8dde7; }
+html[data-theme="dark"] :is(.title,.subtitle,.content,.navbar-item,.menu-label,.menu-list a,.link-muted,strong, .searchbox-result-title) { color: #d8dde7; }
+html[data-theme="dark"] a { color: #91baff; }
+html[data-theme="dark"] :is(a.navbar-item:hover,.menu-list a:hover,.navbar-item.is-active) { background: #303744; color: #fff; }
+html[data-theme="dark"] :is(.post-copyright,.paper-pdf-toolbar,.paper-pdf-reader,pre,blockquote,.input,.textarea) { background: #2a303a; color: #dde3ee; border-color: #454e5d; }
+html[data-theme="dark"] :is(.post-copyright-note,.post-copyright-meta dt,.paper-pdf-help,.article-meta) { color: #b1bac9; }
+html[data-theme="dark"] .content :is(h1,h2,h3,h4,h5,h6,td,th) { color: #dde3ee; }
+html[data-theme="dark"] .content table tr:hover { background: #303744; }
+html[data-theme="dark"] .post-copyright-watermark { color: #ffffff0d; }
