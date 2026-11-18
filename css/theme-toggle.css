@@ -11,3 +11,20 @@ html[data-theme="dark"] :is(.post-copyright-note,.post-copyright-meta dt,.paper-
 html[data-theme="dark"] .content :is(h1,h2,h3,h4,h5,h6,td,th) { color: #dde3ee; }
 html[data-theme="dark"] .content table tr:hover { background: #303744; }
 html[data-theme="dark"] .post-copyright-watermark { color: #ffffff0d; }
+
+/* A quiet midnight sky; decorative layers never intercept interaction. */
+html[data-theme="dark"] { background: #0b1026; }
+html[data-theme="dark"] body { background: radial-gradient(ellipse at 85% 80%, #242e58 0%, #141d3b 45%, #080e20 100%); background-attachment: fixed; }
+.night-sky { display:none; position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+html[data-theme="dark"] .night-sky { display:block; }
+body > section, body > footer { position:relative; }
+.night-star { position:absolute; width:2px; height:2px; border-radius:50%; background:#e1e8ff; box-shadow:0 0 5px #c3d1ff80; animation:night-twinkle var(--duration) ease-in-out infinite alternate; animation-delay:var(--delay); }
+.night-star.warm { background:#f3dfaa; }
+.night-meteor { position:absolute; top:8%; left:85%; width:110px; height:1px; background:linear-gradient(90deg,transparent,#d4e4ff); transform:rotate(-40deg); opacity:0; animation:night-meteor 19s linear infinite; }
+.night-meteor.second { top:40%; left:55%; animation-delay:9s; animation-duration:27s; }
+@keyframes night-twinkle { from { opacity:.2; transform:scale(.7); } to { opacity:.8; transform:scale(1.15); } }
+@keyframes night-meteor { 0%,92% { opacity:0; transform:translate(0,0) rotate(-40deg); } 93% { opacity:.7; } 97%,100% { opacity:0; transform:translate(-360px,300px) rotate(-40deg); } }
+html[data-theme="dark"] :is(.card,.navbar,.navbar-menu,.searchbox-container,.searchbox-body) { background:rgba(28,35,57,.94); box-shadow:0 8px 28px #03081726; }
+html[data-theme="dark"] .footer { background:transparent; }
+@media (prefers-reduced-motion:reduce) { .night-star,.night-meteor { animation:none; } .night-star { opacity:.5; } }
+

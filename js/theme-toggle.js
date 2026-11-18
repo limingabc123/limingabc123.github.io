@@ -16,7 +16,28 @@
         });
     }
     apply(theme);
-    document.addEventListener('DOMContentLoaded', () => apply(theme));
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!document.querySelector('.night-sky')) {
+            const sky = document.createElement('div');
+            sky.className = 'night-sky';
+            sky.setAttribute('aria-hidden', 'true');
+            let seed = 42;
+            const random = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+            for (let i = 0; i < 145; i++) {
+                const star = document.createElement('span');
+                star.className = 'night-star' + (i % 4 === 0 ? ' warm' : '');
+                star.style.cssText = `left:${random()*100}%;top:${random()*100}%;--duration:${3+random()*5}s;--delay:-${random()*8}s`;
+                sky.appendChild(star);
+            }
+            for (const suffix of ['', ' second']) {
+                const meteor = document.createElement('span');
+                meteor.className = 'night-meteor' + suffix;
+                sky.appendChild(meteor);
+            }
+            document.body.prepend(sky);
+        }
+        apply(theme);
+    });
     document.addEventListener('pjax:complete', () => apply(theme));
     document.addEventListener('click', event => {
         if (!event.target.closest('.theme-toggle')) return;
@@ -26,3 +47,4 @@
     });
     media.addEventListener('change', event => { if (saved !== 'dark' && saved !== 'light') apply(event.matches ? 'dark' : 'light'); });
 })();
+
