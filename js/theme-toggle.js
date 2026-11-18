@@ -29,9 +29,10 @@
                 star.style.cssText = `left:${random()*100}%;top:${random()*100}%;--duration:${3+random()*5}s;--delay:-${random()*8}s`;
                 sky.appendChild(star);
             }
-            for (const suffix of ['', ' second']) {
+            for (let i = 0; i < 5; i++) {
                 const meteor = document.createElement('span');
-                meteor.className = 'night-meteor' + suffix;
+                meteor.className = 'night-meteor';
+                meteor.style.cssText = `--top:${65 + i * 7}%;--left:${3 + (i * 13) % 45}%;--period:${10 + i * 2}s;--offset:-${i * 2.7}s`;
                 sky.appendChild(meteor);
             }
             document.body.prepend(sky);
@@ -47,4 +48,6 @@
     });
     media.addEventListener('change', event => { if (saved !== 'dark' && saved !== 'light') apply(event.matches ? 'dark' : 'light'); });
 })();
+
+
 

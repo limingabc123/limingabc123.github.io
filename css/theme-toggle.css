@@ -20,11 +20,20 @@ html[data-theme="dark"] .night-sky { display:block; }
 body > section, body > footer { position:relative; }
 .night-star { position:absolute; width:2px; height:2px; border-radius:50%; background:#e1e8ff; box-shadow:0 0 5px #c3d1ff80; animation:night-twinkle var(--duration) ease-in-out infinite alternate; animation-delay:var(--delay); }
 .night-star.warm { background:#f3dfaa; }
-.night-meteor { position:absolute; top:8%; left:85%; width:110px; height:1px; background:linear-gradient(90deg,transparent,#d4e4ff); transform:rotate(-40deg); opacity:0; animation:night-meteor 19s linear infinite; }
-.night-meteor.second { top:40%; left:55%; animation-delay:9s; animation-duration:27s; }
+.night-meteor { position:absolute; top:var(--top); left:var(--left); width:150px; height:2px; border-radius:50%; background:linear-gradient(90deg,transparent,#93baff90 70%,#eff7ff); filter:drop-shadow(0 0 4px #b6d4ff); opacity:0; animation:night-meteor var(--period) linear infinite; animation-delay:var(--offset); will-change:transform,opacity; }
+.night-meteor::before { content:""; position:absolute; right:0; top:-1px; width:4px; height:4px; border-radius:50%; background:#fff; box-shadow:0 0 8px #c2dcff; }
 @keyframes night-twinkle { from { opacity:.2; transform:scale(.7); } to { opacity:.8; transform:scale(1.15); } }
-@keyframes night-meteor { 0%,92% { opacity:0; transform:translate(0,0) rotate(-40deg); } 93% { opacity:.7; } 97%,100% { opacity:0; transform:translate(-360px,300px) rotate(-40deg); } }
+@keyframes night-meteor { 0% { opacity:0; transform:translate3d(0,0,0) rotate(-35deg); } 2% { opacity:.9; } 14% { opacity:0; transform:translate3d(460px,-322px,0) rotate(-35deg); } 100% { opacity:0; transform:translate3d(460px,-322px,0) rotate(-35deg); } }
 html[data-theme="dark"] :is(.card,.navbar,.navbar-menu,.searchbox-container,.searchbox-body) { background:rgba(28,35,57,.94); box-shadow:0 8px 28px #03081726; }
 html[data-theme="dark"] .footer { background:transparent; }
 @media (prefers-reduced-motion:reduce) { .night-star,.night-meteor { animation:none; } .night-star { opacity:.5; } }
+
+
+/* Slowly moving nebula and star field, confined to the background. */
+.night-sky { isolation:isolate; }
+.night-sky::before { content:""; position:absolute; inset:-25%; z-index:-1; background:radial-gradient(ellipse at 25% 35%,#5474bd25,transparent 42%),radial-gradient(ellipse at 75% 65%,#7659a52e,transparent 45%),radial-gradient(ellipse at 55% 90%,#376e8c20,transparent 40%); animation:night-nebula 32s ease-in-out infinite alternate; }
+.night-star { animation:night-twinkle var(--duration) ease-in-out infinite alternate,night-drift 65s ease-in-out infinite alternate; animation-delay:var(--delay); }
+@keyframes night-nebula { from { transform:translate3d(-3%,-2%,0) rotate(-5deg) scale(1); opacity:.55; } to { transform:translate3d(6%,4%,0) rotate(7deg) scale(1.12); opacity:1; } }
+@keyframes night-drift { from { translate:-8px -5px; } to { translate:22px 16px; } }
+@media (prefers-reduced-motion:reduce) { .night-sky::before,.night-star,.night-meteor { animation:none; } }
 
