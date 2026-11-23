@@ -24,7 +24,7 @@ export function mountCompanion(host, trigger) {
   const mint = new THREE.MeshStandardMaterial({ color: 0xb8e9ca, roughness: .8 });
   const purple = new THREE.MeshStandardMaterial({ color: 0xc7a2dc, roughness: .72 });
   const purpleDark = new THREE.MeshStandardMaterial({ color: 0xa785bb, roughness: .8 });
-  const gold = new THREE.MeshStandardMaterial({ color: 0xffdc72, roughness: .5, emissive: 0xf7bf40, emissiveIntensity: .12 });
+  const gold = new THREE.MeshStandardMaterial({ color: 0xffdc72, roughness: .5, emissive: 0xf7bf40, emissiveIntensity: .65 });
   const ink = new THREE.MeshStandardMaterial({ color: 0x382139, roughness: .22 });
   const white = new THREE.MeshBasicMaterial({ color: 0xffffff });
   const blush = new THREE.MeshStandardMaterial({ color: 0xf3adb7, roughness: 1 });
@@ -117,6 +117,20 @@ export function mountCompanion(host, trigger) {
   shape.closePath();
   const star=new THREE.Mesh(new THREE.ExtrudeGeometry(shape,{depth:.075,bevelEnabled:true,bevelSegments:3,steps:1,bevelSize:.035,bevelThickness:.035}),gold);
   star.position.z=-.04;starPivot.add(star);
+  // A camera-facing, feathered halo makes emission visible without a full-screen bloom pass.
+  const glowCanvas=document.createElement('canvas');glowCanvas.width=glowCanvas.height=128;
+  const glowContext=glowCanvas.getContext('2d');
+  const gradient=glowContext.createRadialGradient(64,64,3,64,64,64);
+  gradient.addColorStop(0,'rgba(255,246,186,0.85)');
+  gradient.addColorStop(.24,'rgba(255,222,113,0.50)');
+  gradient.addColorStop(.55,'rgba(255,197,65,0.16)');
+  gradient.addColorStop(1,'rgba(255,183,46,0)');
+  glowContext.fillStyle=gradient;glowContext.fillRect(0,0,128,128);
+  const glowTexture=new THREE.CanvasTexture(glowCanvas);
+  glowTexture.colorSpace=THREE.SRGBColorSpace;
+  const glowMaterial=new THREE.SpriteMaterial({map:glowTexture,transparent:true,opacity:.72,depthWrite:false});
+  const glow=new THREE.Sprite(glowMaterial);glow.position.z=-.15;glow.scale.set(1.05,1.05,1);starPivot.add(glow);
+  const starLight=new THREE.PointLight(0xffdb82,.35,1.4,2);starLight.position.set(0,-.03,.28);starPivot.add(starLight);
 
   let hovered=false,targetX=0,targetY=0,raf=0,last=0,elapsed=0,visible=true,disposed=false;
   let nextBlink=2.2,blinkStart=-10,greetingUntil=2.3;
@@ -157,7 +171,11 @@ export function mountCompanion(host, trigger) {
     arms[1].position.y=1.37+.12*thinkingBlend;
     tail.rotation.y=Math.sin(t*.85)*.12;
     starPivot.rotation.z=Math.sin(t*1.6)*.08;
-    gold.emissiveIntensity=thinking?.24+Math.sin(t*2)*.12:.12;
+    const pulse=.5+.5*Math.sin(t*(thinking?2.4:1.55));
+    gold.emissiveIntensity=.55+pulse*(thinking?.85:.55);
+    glowMaterial.opacity=.48+pulse*(thinking?.42:.30);
+    const haloSize=.92+pulse*.22;glow.scale.set(haloSize,haloSize,1);
+    starLight.intensity=.22+pulse*(thinking?.65:.4);
     if(happy)root.rotation.x+=Math.sin((3.2-(happyUntil-t))*5)*.10;
     renderer.render(scene,camera);raf=requestAnimationFrame(frame);
   }
@@ -171,6 +189,6 @@ export function mountCompanion(host, trigger) {
   renderer.domElement.addEventListener('webglcontextlost',event=>{event.preventDefault();cancelAnimationFrame(raf);raf=0;host.classList.remove('is-rendered');});
   renderer.domElement.addEventListener('webglcontextrestored',()=>{host.classList.add('is-rendered');start();});
   root.scale.set(1.16,.96,1.06);root.rotation.y=-.16;resize();host.classList.add('is-rendered');start();
-  function dispose(event){if(event.persisted)return;disposed=true;cancelAnimationFrame(raf);observer.disconnect();intersection.disconnect();document.removeEventListener('pointermove',move);document.removeEventListener('visibilitychange',visibility);reduced.removeEventListener('change',start);scene.traverse(object=>{if(object.geometry)object.geometry.dispose();});[mint,purple,purpleDark,gold,ink,white,blush].forEach(material=>material.dispose());sphere.dispose();renderer.dispose();}
+  function dispose(event){if(event.persisted)return;disposed=true;cancelAnimationFrame(raf);observer.disconnect();intersection.disconnect();document.removeEventListener('pointermove',move);document.removeEventListener('visibilitychange',visibility);reduced.removeEventListener('change',start);scene.traverse(object=>{if(object.geometry)object.geometry.dispose();});[mint,purple,purpleDark,gold,ink,white,blush].forEach(material=>material.dispose());glowMaterial.dispose();glowTexture.dispose();sphere.dispose();renderer.dispose();}
   window.addEventListener('pagehide',dispose,{once:true});
 }
