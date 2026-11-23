@@ -670,7 +670,7 @@
 #floating-bot.active { visibility:hidden; pointer-events:none; }
 
 /* Bounded screen wandering, paused for interaction. */
-#floating-bot { --roam-x:max(0px, calc(100vw - 194px)); --roam-y:max(0px, calc(100dvh - 350px)); animation:mingWander 90s ease-in-out infinite; }
+#floating-bot { --roam-x:max(0px, calc(100vw - 194px)); --roam-y:max(0px, calc(100dvh - 350px)); animation:mingWander 240s ease-in-out infinite; }
 #floating-bot:hover, #floating-bot:focus-within, #floating-bot.active { animation-play-state:paused; }
 @keyframes mingWander {
   0%,100% { transform:translate(0,0); }
@@ -684,3 +684,8 @@
 }
 @media (max-width:768px) { #floating-bot { top:76px; bottom:auto; --roam-x:max(0px,calc(100vw - 135px)); --roam-y:max(0px,calc(100dvh - 240px)); } }
 @media (prefers-reduced-motion:reduce) { #floating-bot { animation:none; } }
+
+/* Stay visible beside the conversation so thinking and completion gestures can be seen. */
+#floating-bot.active { visibility:visible; pointer-events:auto; animation:none; transform:none; top:auto; left:auto; right:22px; bottom:32px; }
+#floating-bot.active .close-icon { display:none; }
+@media (max-width:768px) { #floating-bot.active { z-index:9997; } }

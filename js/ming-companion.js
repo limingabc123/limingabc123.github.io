@@ -38,8 +38,10 @@ export function mountCompanion(host, trigger) {
   const points = bodyGeometry.attributes.position;
   for (let i = 0; i < points.count; i++) {
     const y = points.getY(i);
-    const width = 1 - .18 * y;
-    points.setXYZ(i, points.getX(i) * 1.01 * width, y * 1.15, points.getZ(i) * .69 * width);
+    const width = 1 - .055 * y;
+    const x = points.getX(i);
+    const roundedX = Math.sign(x) * Math.pow(Math.abs(x), .82);
+    points.setXYZ(i, roundedX * 1.01 * width, y * 1.10, points.getZ(i) * .69 * width);
   }
   bodyGeometry.computeVertexNormals();
   const body = new THREE.Mesh(bodyGeometry, mint); body.position.y = 1.3; root.add(body);
@@ -60,14 +62,18 @@ export function mountCompanion(host, trigger) {
     new THREE.Vector3(-.11,-.1,.687),new THREE.Vector3(-.07,-.155,.695),
     new THREE.Vector3(0,-.13,.701),new THREE.Vector3(.07,-.155,.695),new THREE.Vector3(.11,-.1,.687)
   ]);
-  face.add(new THREE.Mesh(new THREE.TubeGeometry(mouthCurve,24,.014,8,false),ink));
+  const mouth = new THREE.Mesh(new THREE.TubeGeometry(mouthCurve,24,.014,8,false),ink);
+  face.add(mouth);
+  const happyMouth = ellipsoid(face, ink, [0,-.13,.704], [.12,.08,.016]);
+  const tongue = ellipsoid(face, blush, [0,-.167,.722], [.065,.027,.009]);
+  happyMouth.visible = tongue.visible = false;
   // Swept, gently curved lavender horns, with subtle transverse bands.
   [-1,1].forEach(side => {
     const horn = new THREE.Group(); horn.position.set(side*.61,2.17,0); root.add(horn);
     const ringCount = 22, segments = 20, vertices = [], indices = [];
     for(let i=0;i<=ringCount;i++) {
       const t=i/ringCount, radius=.17*Math.pow(1-t,.7)+.006;
-      const cx=side*(.25*t-.12*t*t), cy=.62*t, cz=-.08*t;
+      const cx=side*(.25*t-.12*t*t), cy=.43*t, cz=-.08*t;
       for(let j=0;j<=segments;j++) {
         const angle=j/segments*Math.PI*2;
         vertices.push(cx+Math.cos(angle)*radius,cy,cz+Math.sin(angle)*radius);
@@ -84,7 +90,7 @@ export function mountCompanion(host, trigger) {
     [.23,.46,.68].forEach(t=>{
       const radius=.17*Math.pow(1-t,.7)+.008;
       const band=new THREE.Mesh(new THREE.TorusGeometry(radius,.009,6,32),purpleDark);
-      band.rotation.x=Math.PI/2; band.position.set(side*(.25*t-.12*t*t),.62*t,-.08*t);horn.add(band);
+      band.rotation.x=Math.PI/2; band.position.set(side*(.25*t-.12*t*t),.43*t,-.08*t);horn.add(band);
     });
   });
   const arms=[];
@@ -101,7 +107,7 @@ export function mountCompanion(host, trigger) {
     ellipsoid(tail,mint,[p.x,p.y,p.z],[r,r*.85,r]);
   }
   [.4,.65,.85].forEach(t=>{const p=tailCurve.getPoint(t);ellipsoid(tail,purple,[p.x,p.y+.13,p.z],[.09,.14,.085]);});
-  const starPivot=new THREE.Group();starPivot.position.set(0,2.8,0);root.add(starPivot);
+  const starPivot=new THREE.Group();starPivot.position.set(0,2.68,0);root.add(starPivot);
   const stalk=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,.27,12),gold);stalk.position.y=-.19;starPivot.add(stalk);
   const shape=new THREE.Shape();
   for(let i=0;i<10;i++) {
@@ -114,6 +120,7 @@ export function mountCompanion(host, trigger) {
 
   let hovered=false,targetX=0,targetY=0,raf=0,last=0,elapsed=0,visible=true,disposed=false;
   let nextBlink=2.2,blinkStart=-10,greetingUntil=2.3;
+  let previousMood='idle', happyUntil=0, thinkingBlend=0;
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
   function resize(){const box=host.getBoundingClientRect();if(!box.width || !box.height)return;renderer.setSize(box.width,box.height,false);camera.aspect=box.width/box.height;camera.updateProjectionMatrix();renderStill();}
   function renderStill(){renderer.render(scene,camera);}
@@ -125,25 +132,33 @@ export function mountCompanion(host, trigger) {
     raf=0;if(disposed || document.hidden || !visible)return;
     if(reduced.matches){root.position.y=0;root.rotation.set(0,-.16,0);renderStill();return;}
     const dt=last?Math.min((now-last)/1000,.05):0;last=now;elapsed+=dt;
-    const t=elapsed,thinking=trigger.dataset.mood==='thinking',happy=trigger.dataset.mood==='happy';
+    const t=elapsed, mood=trigger.dataset.mood || 'idle', thinking=mood==='thinking';
+    if(mood!==previousMood){if(mood==='happy')happyUntil=t+3.2;previousMood=mood;}
+    const happy=mood==='happy' && t<happyUntil;
+    const smoothing=1-Math.exp(-dt*7);
+    thinkingBlend=THREE.MathUtils.lerp(thinkingBlend,thinking?1:0,smoothing);
     root.position.y=Math.sin(t*1.9)*.045;
     root.scale.y=.96+Math.sin(t*1.9)*.012;
-    root.rotation.y=THREE.MathUtils.lerp(root.rotation.y,-.16+targetX*.32+Math.sin(t*.65)*.06,.06);
-    root.rotation.x=THREE.MathUtils.lerp(root.rotation.x,targetY*.08,.06);
-    root.rotation.z=thinking?Math.sin(t*2)*.04:Math.sin(t*1.1)*.018;
-    face.rotation.z=thinking?-.1:0;
+    root.rotation.y=THREE.MathUtils.lerp(root.rotation.y,-.16+targetX*.42+Math.sin(t*.65)*.06,smoothing);
+    root.rotation.x=THREE.MathUtils.lerp(root.rotation.x,targetY*.08,smoothing);
+    root.rotation.z=-.10*thinkingBlend+Math.sin(t*.8)*.012;
+    face.rotation.z=-.08*thinkingBlend;
+    mouth.visible=!happy;happyMouth.visible=tongue.visible=happy;
     if(t>nextBlink){blinkStart=t;nextBlink=t+3+Math.random()*3;}
     const blinkAge=t-blinkStart;
     const blink=blinkAge<.19?Math.max(.08,Math.abs(blinkAge-.095)/.095):1;
-    eyes.forEach(eye=>{eye.scale.y=blink;});
+    eyes.forEach(eye=>{eye.scale.y=blink*(happy?.72:1);});
     arms[0].rotation.z=Math.sin(t*1.7)*.08;
     const waving=hovered || t<greetingUntil;
-    arms[1].rotation.z=thinking?1.65:waving?.65+Math.sin(t*9)*.35:Math.sin(t*1.7+.7)*.08;
-    arms[1].rotation.y=thinking?-.7:0;
-    tail.rotation.y=Math.sin(t*2)*.16;
+    const waveAngle=waving?.65+Math.sin(t*5.2)*.25:Math.sin(t*1.2+.7)*.06;
+    arms[1].rotation.z=THREE.MathUtils.lerp(arms[1].rotation.z,THREE.MathUtils.lerp(waveAngle,2.35,thinkingBlend),smoothing);
+    arms[1].rotation.y=THREE.MathUtils.lerp(arms[1].rotation.y,-1.05*thinkingBlend,smoothing);
+    arms[1].position.z=.30*thinkingBlend;
+    arms[1].position.y=1.37+.12*thinkingBlend;
+    tail.rotation.y=Math.sin(t*.85)*.12;
     starPivot.rotation.z=Math.sin(t*1.6)*.08;
-    gold.emissiveIntensity=thinking?.25+Math.sin(t*4)*.2:.12;
-    if(happy)root.rotation.x+=Math.sin(t*4)*.035;
+    gold.emissiveIntensity=thinking?.24+Math.sin(t*2)*.12:.12;
+    if(happy)root.rotation.x+=Math.sin((3.2-(happyUntil-t))*5)*.10;
     renderer.render(scene,camera);raf=requestAnimationFrame(frame);
   }
   function start(){if(!raf && !disposed && visible && !document.hidden){last=0;raf=requestAnimationFrame(frame);}}
