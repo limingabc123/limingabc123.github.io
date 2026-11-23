@@ -38,16 +38,34 @@ export function mountCompanion(host, trigger) {
   const points = bodyGeometry.attributes.position;
   for (let i = 0; i < points.count; i++) {
     const y = points.getY(i);
-    const width = 1 - .055 * y;
+    const width = 1 - .10 * y;
     const x = points.getX(i);
     const roundedX = Math.sign(x) * Math.pow(Math.abs(x), .82);
-    points.setXYZ(i, roundedX * 1.01 * width, y * 1.10, points.getZ(i) * .69 * width);
+    points.setXYZ(i, roundedX * .92 * width, y * 1.10, points.getZ(i) * .69 * width);
   }
   bodyGeometry.computeVertexNormals();
   const body = new THREE.Mesh(bodyGeometry, mint); body.position.y = 1.3; root.add(body);
-  ellipsoid(root, purple, [0,.96,.625], [.57,.54,.105]);
-  ellipsoid(root, mint, [-.37,.22,.12], [.24,.23,.32]);
-  ellipsoid(root, mint, [.37,.22,.12], [.24,.23,.32]);
+  // Follow the torso surface instead of placing a bulging sphere over the stomach.
+  const bellyVertices=[], bellyIndices=[], bellyRings=18, bellySegments=48;
+  for(let ring=0;ring<=bellyRings;ring++) {
+    const r=ring/bellyRings;
+    for(let j=0;j<=bellySegments;j++) {
+      const a=j/bellySegments*Math.PI*2;
+      const x=Math.cos(a)*r*.49, y=.93+Math.sin(a)*r*.46;
+      const normalizedY=(y-1.3)/1.10, width=1-.10*normalizedY;
+      const sphereX=Math.pow(Math.abs(x/(.92*width)),1/.82);
+      const z=Math.sqrt(Math.max(0,1-normalizedY*normalizedY-sphereX*sphereX))*.69*width+.009;
+      bellyVertices.push(x,y,z);
+      if(ring<bellyRings && j<bellySegments){const a=ring*(bellySegments+1)+j,b=a+bellySegments+1;bellyIndices.push(a,b,a+1,b,b+1,a+1);}
+    }
+  }
+  const bellyGeometry=new THREE.BufferGeometry();
+  bellyGeometry.setAttribute('position',new THREE.Float32BufferAttribute(bellyVertices,3));
+  // The patch faces the camera along +Z.
+  bellyGeometry.setIndex(bellyIndices);
+  bellyGeometry.computeVertexNormals();root.add(new THREE.Mesh(bellyGeometry,purple));
+  ellipsoid(root, mint, [-.34,.27,.12], [.21,.22,.28]);
+  ellipsoid(root, mint, [.34,.27,.12], [.21,.22,.28]);
   const face = new THREE.Group(); face.position.set(0,1.82,0); root.add(face);
   const eyes = [];
   [-1,1].forEach(side => {
@@ -55,9 +73,9 @@ export function mountCompanion(host, trigger) {
     ellipsoid(eye,ink,[0,0,0],[.115,.145,.06]);
     ellipsoid(eye,white,[-.026,.049,.05],[.033,.036,.016]);
     ellipsoid(eye,purple, [.023,-.065,.043],[.04,.028,.012]);
-    ellipsoid(face,blush,[side*.46,-.13,.55],[.155,.085,.025]);
-    ellipsoid(face,white,[side*.46-.025,-.115,.578],[.014,.02,.008]);
-    ellipsoid(face,white,[side*.46+.025,-.12,.578],[.011,.016,.008]);
+    ellipsoid(face,blush,[side*.43,-.13,.57],[.13,.075,.025]);
+    ellipsoid(face,white,[side*.43-.025,-.115,.598],[.014,.02,.008]);
+    ellipsoid(face,white,[side*.43+.025,-.12,.598],[.011,.016,.008]);
   });
   const mouthCurve = new THREE.CatmullRomCurve3([
     new THREE.Vector3(-.11,-.1,.687),new THREE.Vector3(-.07,-.155,.695),
@@ -98,9 +116,9 @@ export function mountCompanion(host, trigger) {
   });
   const arms=[];
   [-1,1].forEach(side=>{
-    const pivot=new THREE.Group();pivot.position.set(side*.77,1.37,0);root.add(pivot);arms.push(pivot);
-    ellipsoid(pivot,mint,[side*.19,0,.03],[.29,.14,.19]);
-    for(let n=0;n<3;n++) ellipsoid(pivot,mint,[side*(.35+(n===1?.035:0)),.075-n*.07,.045],[.09,.065,.11]);
+    const pivot=new THREE.Group();pivot.position.set(side*.74,1.37,0);root.add(pivot);arms.push(pivot);
+    ellipsoid(pivot,mint,[side*.16,0,.06],[.24,.18,.20]);
+    for(let n=0;n<3;n++) ellipsoid(pivot,mint,[side*(.29+(n===1?.025:0)),.075-n*.07,.045],[.09,.065,.11]);
   });
   const tail=new THREE.Group();tail.position.set(.57,.54,-.29);root.add(tail);
   const tailCurve=new THREE.CatmullRomCurve3([new THREE.Vector3(0,0,0),new THREE.Vector3(.38,-.02,-.1),new THREE.Vector3(.72,.05,-.07),new THREE.Vector3(.85,.27,0)]);
