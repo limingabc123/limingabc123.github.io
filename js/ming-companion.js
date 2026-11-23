@@ -21,8 +21,8 @@ export function mountCompanion(host, trigger) {
   key.position.set(-3, 5, 5); scene.add(key);
   const fill = new THREE.DirectionalLight(0xc6eaff, 1.3);
   fill.position.set(4, 2, -2); scene.add(fill);
-  const mint = new THREE.MeshStandardMaterial({ color: 0xb8e9ca, roughness: .8 });
-  const purple = new THREE.MeshStandardMaterial({ color: 0xc7a2dc, roughness: .72 });
+  const mint = new THREE.MeshPhysicalMaterial({ color: 0xb8e9ca, roughness: .88, sheen: .55, sheenColor: 0xe0f5e6, sheenRoughness: .9 });
+  const purple = new THREE.MeshPhysicalMaterial({ color: 0xc7a2dc, roughness: .85, sheen: .4, sheenColor: 0xe8d7f2, sheenRoughness: .85 });
   const purpleDark = new THREE.MeshStandardMaterial({ color: 0xa785bb, roughness: .8 });
   const gold = new THREE.MeshStandardMaterial({ color: 0xffdc72, roughness: .5, emissive: 0xf7bf40, emissiveIntensity: .65 });
   const ink = new THREE.MeshStandardMaterial({ color: 0x382139, roughness: .22 });
@@ -45,18 +45,19 @@ export function mountCompanion(host, trigger) {
   }
   bodyGeometry.computeVertexNormals();
   const body = new THREE.Mesh(bodyGeometry, mint); body.position.y = 1.3; root.add(body);
-  ellipsoid(root, purple, [0,.93,.61], [.52,.49,.12]);
+  ellipsoid(root, purple, [0,.96,.625], [.57,.54,.105]);
   ellipsoid(root, mint, [-.37,.22,.12], [.24,.23,.32]);
   ellipsoid(root, mint, [.37,.22,.12], [.24,.23,.32]);
   const face = new THREE.Group(); face.position.set(0,1.82,0); root.add(face);
   const eyes = [];
   [-1,1].forEach(side => {
     const eye = new THREE.Group(); eye.position.set(side*.29,.04,.615); face.add(eye); eyes.push(eye);
-    ellipsoid(eye,ink,[0,0,0],[.105,.132,.055]);
+    ellipsoid(eye,ink,[0,0,0],[.115,.145,.06]);
     ellipsoid(eye,white,[-.026,.049,.05],[.033,.036,.016]);
     ellipsoid(eye,purple, [.023,-.065,.043],[.04,.028,.012]);
-    ellipsoid(face,blush,[side*.46,-.13,.53],[.14,.075,.025]);
-    ellipsoid(face,white,[side*.46-.025,-.115,.556],[.013,.018,.008]);
+    ellipsoid(face,blush,[side*.46,-.13,.55],[.155,.085,.025]);
+    ellipsoid(face,white,[side*.46-.025,-.115,.578],[.014,.02,.008]);
+    ellipsoid(face,white,[side*.46+.025,-.12,.578],[.011,.016,.008]);
   });
   const mouthCurve = new THREE.CatmullRomCurve3([
     new THREE.Vector3(-.11,-.1,.687),new THREE.Vector3(-.07,-.155,.695),
@@ -67,13 +68,14 @@ export function mountCompanion(host, trigger) {
   const happyMouth = ellipsoid(face, ink, [0,-.13,.704], [.12,.08,.016]);
   const tongue = ellipsoid(face, blush, [0,-.167,.722], [.065,.027,.009]);
   happyMouth.visible = tongue.visible = false;
+  // Faithful concept details: soft lavender belly, glossy eyes and rounded swept horns.
   // Swept, gently curved lavender horns, with subtle transverse bands.
   [-1,1].forEach(side => {
-    const horn = new THREE.Group(); horn.position.set(side*.61,2.17,0); root.add(horn);
+    const horn = new THREE.Group(); horn.position.set(side*.68,2.14,0); root.add(horn);
     const ringCount = 22, segments = 20, vertices = [], indices = [];
     for(let i=0;i<=ringCount;i++) {
-      const t=i/ringCount, radius=.17*Math.pow(1-t,.7)+.006;
-      const cx=side*(.25*t-.12*t*t), cy=.43*t, cz=-.08*t;
+      const t=i/ringCount, radius=.205*Math.pow(1-t,.65)+.018;
+      const cx=side*(.38*t-.25*t*t), cy=.54*t, cz=-.06*t;
       for(let j=0;j<=segments;j++) {
         const angle=j/segments*Math.PI*2;
         vertices.push(cx+Math.cos(angle)*radius,cy,cz+Math.sin(angle)*radius);
@@ -87,10 +89,11 @@ export function mountCompanion(host, trigger) {
     geometry.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));
     geometry.setIndex(indices); geometry.computeVertexNormals();
     horn.add(new THREE.Mesh(geometry,purple));
+    ellipsoid(horn,purple,[side*.13,.54,-.06],[.019,.022,.019]);
     [.23,.46,.68].forEach(t=>{
-      const radius=.17*Math.pow(1-t,.7)+.008;
+      const radius=.205*Math.pow(1-t,.65)+.020;
       const band=new THREE.Mesh(new THREE.TorusGeometry(radius,.009,6,32),purpleDark);
-      band.rotation.x=Math.PI/2; band.position.set(side*(.25*t-.12*t*t),.43*t,-.08*t);horn.add(band);
+      band.rotation.x=Math.PI/2; band.position.set(side*(.38*t-.25*t*t),.54*t,-.06*t);horn.add(band);
     });
   });
   const arms=[];
