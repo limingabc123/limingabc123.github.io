@@ -152,7 +152,7 @@ export function mountCompanion(host, trigger) {
     const smoothing=1-Math.exp(-dt*7);
     thinkingBlend=THREE.MathUtils.lerp(thinkingBlend,thinking?1:0,smoothing);
     root.position.y=Math.sin(t*1.9)*.045;
-    root.scale.y=.96+Math.sin(t*1.9)*.012;
+    root.scale.y=1.04+Math.sin(t*1.9)*.012;
     root.rotation.y=THREE.MathUtils.lerp(root.rotation.y,-.16+targetX*.42+Math.sin(t*.65)*.06,smoothing);
     root.rotation.x=THREE.MathUtils.lerp(root.rotation.x,targetY*.08,smoothing);
     root.rotation.z=-.10*thinkingBlend+Math.sin(t*.8)*.012;
@@ -188,7 +188,7 @@ export function mountCompanion(host, trigger) {
   document.addEventListener('visibilitychange',visibility);reduced.addEventListener('change',start);
   renderer.domElement.addEventListener('webglcontextlost',event=>{event.preventDefault();cancelAnimationFrame(raf);raf=0;host.classList.remove('is-rendered');});
   renderer.domElement.addEventListener('webglcontextrestored',()=>{host.classList.add('is-rendered');start();});
-  root.scale.set(1.16,.96,1.06);root.rotation.y=-.16;resize();host.classList.add('is-rendered');start();
+  root.scale.set(1.05,1.04,1.03);root.rotation.y=-.16;resize();host.classList.add('is-rendered');start();
   function dispose(event){if(event.persisted)return;disposed=true;cancelAnimationFrame(raf);observer.disconnect();intersection.disconnect();document.removeEventListener('pointermove',move);document.removeEventListener('visibilitychange',visibility);reduced.removeEventListener('change',start);scene.traverse(object=>{if(object.geometry)object.geometry.dispose();});[mint,purple,purpleDark,gold,ink,white,blush].forEach(material=>material.dispose());glowMaterial.dispose();glowTexture.dispose();sphere.dispose();renderer.dispose();}
   window.addEventListener('pagehide',dispose,{once:true});
 }
