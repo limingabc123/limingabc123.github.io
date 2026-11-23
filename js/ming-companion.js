@@ -21,8 +21,8 @@ export function mountCompanion(host, trigger) {
   key.position.set(-3, 5, 5); scene.add(key);
   const fill = new THREE.DirectionalLight(0xc6eaff, 1.3);
   fill.position.set(4, 2, -2); scene.add(fill);
-  const mint = new THREE.MeshPhysicalMaterial({ color: 0xb8e9ca, roughness: .88, sheen: .55, sheenColor: 0xe0f5e6, sheenRoughness: .9 });
-  const purple = new THREE.MeshPhysicalMaterial({ color: 0xc7a2dc, roughness: .85, sheen: .4, sheenColor: 0xe8d7f2, sheenRoughness: .85 });
+  const mint = new THREE.MeshPhysicalMaterial({ color: 0xb9e7bd, roughness: .88, sheen: .55, sheenColor: 0xe0f5e6, sheenRoughness: .9 });
+  const purple = new THREE.MeshPhysicalMaterial({ color: 0xc1a0d9, roughness: .85, sheen: .4, sheenColor: 0xe8d7f2, sheenRoughness: .85 });
   const purpleDark = new THREE.MeshStandardMaterial({ color: 0xa785bb, roughness: .8 });
   const gold = new THREE.MeshStandardMaterial({ color: 0xffdc72, roughness: .5, emissive: 0xf7bf40, emissiveIntensity: .65 });
   const ink = new THREE.MeshStandardMaterial({ color: 0x382139, roughness: .22 });
@@ -38,10 +38,10 @@ export function mountCompanion(host, trigger) {
   const points = bodyGeometry.attributes.position;
   for (let i = 0; i < points.count; i++) {
     const y = points.getY(i);
-    const width = 1 - .10 * y;
+    const width = 1 - .13 * y;
     const x = points.getX(i);
-    const roundedX = Math.sign(x) * Math.pow(Math.abs(x), .82);
-    points.setXYZ(i, roundedX * .92 * width, y * 1.10, points.getZ(i) * .69 * width);
+    const roundedX = Math.sign(x) * Math.pow(Math.abs(x), .93);
+    points.setXYZ(i, roundedX * .96 * width, y * 1.10, points.getZ(i) * .69 * width);
   }
   bodyGeometry.computeVertexNormals();
   const body = new THREE.Mesh(bodyGeometry, mint); body.position.y = 1.3; root.add(body);
@@ -51,9 +51,9 @@ export function mountCompanion(host, trigger) {
     const r=ring/bellyRings;
     for(let j=0;j<=bellySegments;j++) {
       const a=j/bellySegments*Math.PI*2;
-      const x=Math.cos(a)*r*.49, y=.93+Math.sin(a)*r*.46;
-      const normalizedY=(y-1.3)/1.10, width=1-.10*normalizedY;
-      const sphereX=Math.pow(Math.abs(x/(.92*width)),1/.82);
+      const x=Math.cos(a)*r*.47, y=.89+Math.sin(a)*r*.40;
+      const normalizedY=(y-1.3)/1.10, width=1-.13*normalizedY;
+      const sphereX=Math.pow(Math.abs(x/(.96*width)),1/.93);
       const z=Math.sqrt(Math.max(0,1-normalizedY*normalizedY-sphereX*sphereX))*.69*width+.009;
       bellyVertices.push(x,y,z);
       if(ring<bellyRings && j<bellySegments){const a=ring*(bellySegments+1)+j,b=a+bellySegments+1;bellyIndices.push(a,b,a+1,b,b+1,a+1);}
@@ -69,11 +69,11 @@ export function mountCompanion(host, trigger) {
   const face = new THREE.Group(); face.position.set(0,1.82,0); root.add(face);
   const eyes = [];
   [-1,1].forEach(side => {
-    const eye = new THREE.Group(); eye.position.set(side*.29,.04,.615); face.add(eye); eyes.push(eye);
-    ellipsoid(eye,ink,[0,0,0],[.115,.145,.06]);
-    ellipsoid(eye,white,[-.026,.049,.05],[.033,.036,.016]);
-    ellipsoid(eye,purple, [.023,-.065,.043],[.04,.028,.012]);
-    ellipsoid(face,blush,[side*.43,-.13,.57],[.13,.075,.025]);
+    const eye = new THREE.Group(); eye.position.set(side*.28,.015,.635); face.add(eye); eyes.push(eye);
+    ellipsoid(eye,ink,[0,0,0],[.10,.115,.052]);
+    ellipsoid(eye,white,[-.025,.038,.049],[.027,.029,.014]);
+    ellipsoid(eye,purple, [.018,-.048,.045],[.033,.023,.011]);
+    ellipsoid(face,blush,[side*.43,-.115,.57],[.125,.072,.022]);
     ellipsoid(face,white,[side*.43-.025,-.115,.598],[.014,.02,.008]);
     ellipsoid(face,white,[side*.43+.025,-.12,.598],[.011,.016,.008]);
   });
@@ -117,8 +117,8 @@ export function mountCompanion(host, trigger) {
   const arms=[];
   [-1,1].forEach(side=>{
     const pivot=new THREE.Group();pivot.position.set(side*.74,1.37,0);root.add(pivot);arms.push(pivot);
-    ellipsoid(pivot,mint,[side*.16,0,.06],[.24,.18,.20]);
-    for(let n=0;n<3;n++) ellipsoid(pivot,mint,[side*(.29+(n===1?.025:0)),.075-n*.07,.045],[.09,.065,.11]);
+    ellipsoid(pivot,mint,[side*.18,.025,.06],[.28,.145,.15]);
+    for(let n=0;n<3;n++) ellipsoid(pivot,mint,[side*(.34+(n===1?.025:0)),.075-n*.07,.045],[.085,.065,.10]);
   });
   const tail=new THREE.Group();tail.position.set(.57,.54,-.29);root.add(tail);
   const tailCurve=new THREE.CatmullRomCurve3([new THREE.Vector3(0,0,0),new THREE.Vector3(.38,-.02,-.1),new THREE.Vector3(.72,.05,-.07),new THREE.Vector3(.85,.27,0)]);
@@ -209,7 +209,7 @@ export function mountCompanion(host, trigger) {
   document.addEventListener('visibilitychange',visibility);reduced.addEventListener('change',start);
   renderer.domElement.addEventListener('webglcontextlost',event=>{event.preventDefault();cancelAnimationFrame(raf);raf=0;host.classList.remove('is-rendered');});
   renderer.domElement.addEventListener('webglcontextrestored',()=>{host.classList.add('is-rendered');start();});
-  root.scale.set(1.14,1.04,1.08);root.rotation.y=-.16;resize();host.classList.add('is-rendered');start();
+  root.scale.set(1.10,1.04,1.06);root.rotation.y=-.16;resize();host.classList.add('is-rendered');start();
   function dispose(event){if(event.persisted)return;disposed=true;cancelAnimationFrame(raf);observer.disconnect();intersection.disconnect();document.removeEventListener('pointermove',move);document.removeEventListener('visibilitychange',visibility);reduced.removeEventListener('change',start);scene.traverse(object=>{if(object.geometry)object.geometry.dispose();});[mint,purple,purpleDark,gold,ink,white,blush].forEach(material=>material.dispose());glowMaterial.dispose();glowTexture.dispose();sphere.dispose();renderer.dispose();}
   window.addEventListener('pagehide',dispose,{once:true});
 }
