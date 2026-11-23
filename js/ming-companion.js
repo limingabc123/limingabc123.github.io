@@ -89,7 +89,7 @@ export function mountCompanion(host, trigger) {
   // Faithful concept details: soft lavender belly, glossy eyes and rounded swept horns.
   // Swept, gently curved lavender horns, with subtle transverse bands.
   [-1,1].forEach(side => {
-    const horn = new THREE.Group(); horn.position.set(side*.68,2.14,0); root.add(horn);
+    const horn = new THREE.Group(); horn.position.set(side*.62,2.02,0); root.add(horn);
     const ringCount = 22, segments = 20, vertices = [], indices = [];
     for(let i=0;i<=ringCount;i++) {
       const t=i/ringCount, radius=.205*Math.pow(1-t,.65)+.018;
