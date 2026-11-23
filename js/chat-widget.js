@@ -44,6 +44,18 @@
     buildWidget();
     cacheElements();
     bindEvents();
+    els.floatingBot.setAttribute('role', 'button');
+    els.floatingBot.setAttribute('tabindex', '0');
+    els.floatingBot.setAttribute('aria-expanded', 'false');
+    els.floatingBot.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        togglePanel();
+      }
+    });
+    import('/js/ming-companion.js?v=20261123').then(function (module) {
+      module.mountCompanion(els.floatingBot.querySelector('.ming-companion'), els.floatingBot);
+    }).catch(function (error) { console.warn('Companion fallback:', error); });
     if (state.messages.length === 0) {
       addWelcomeMessage();
     } else {
@@ -129,7 +141,7 @@
       '\
 <div id="floating-bot" aria-label="Open chat">\
   <div class="floating-bot-inner">\
-    <img src="/images/Bot.png" alt="Ming\'s Assistant" class="bot-avatar-img">\
+    <div class="ming-companion" aria-hidden="true"><img src="/images/Bot.png" alt="" class="ming-companion-fallback"></div>\
     <span class="floating-label">Li Ming\'s<br>Dedicated Research Assistant</span>\
   </div>\
   <span class="close-icon">✕</span>\
@@ -269,6 +281,7 @@
 
   function openPanel() {
     state.isOpen = true;
+    els.floatingBot.setAttribute('aria-expanded', 'true');
     els.panel.classList.add('open');
     els.floatingBot.classList.add('active');
     scrollToBottom();
@@ -277,6 +290,7 @@
 
   function closePanel() {
     state.isOpen = false;
+    els.floatingBot.setAttribute('aria-expanded', 'false');
     els.panel.classList.remove('open');
     els.floatingBot.classList.remove('active');
     closeSettings();
@@ -464,6 +478,7 @@
     saveHistory();
 
     state.isLoading = true;
+    els.floatingBot.dataset.mood = 'thinking';
     els.send.disabled = true;
 
     // Only show typing indicator while waiting (no empty bot bubble)
@@ -484,6 +499,7 @@
         state.messages.push({ role: 'assistant', content: fullText });
         saveHistory();
         state.isLoading = false;
+        els.floatingBot.dataset.mood = 'happy';
         els.send.disabled = false;
       })
       .catch(function (err) {
@@ -499,6 +515,7 @@
         // Show error
         appendMessageUI('error', '⚠️ ' + err.message);
         state.isLoading = false;
+        els.floatingBot.dataset.mood = 'idle';
         els.send.disabled = false;
       });
   }
