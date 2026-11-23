@@ -142,7 +142,7 @@
 <div id="floating-bot" aria-label="Open chat">\
   <div class="floating-bot-inner">\
     <div class="ming-companion" aria-hidden="true"><img src="/images/Bot.png" alt="" class="ming-companion-fallback"></div>\
-    <span class="floating-label">Li Ming\'s<br>Dedicated Research Assistant</span>\
+    <span class="floating-label"><span class="companion-tag-title">Ming\'s Assistant</span><span class="companion-tag-caption"><i class="companion-tag-light"></i><span class="companion-tag-idle">Let\'s talk research</span><span class="companion-tag-thinking">Thinking softly...</span><span class="companion-tag-happy">Ready for you</span></span></span>\
   </div>\
   <span class="close-icon">✕</span>\
 </div>\

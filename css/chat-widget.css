@@ -689,3 +689,33 @@
 #floating-bot.active { visibility:visible; pointer-events:auto; animation:none; transform:none; top:auto; left:auto; right:22px; bottom:32px; }
 #floating-bot.active .close-icon { display:none; }
 @media (max-width:768px) { #floating-bot.active { z-index:9997; } }
+
+/* A small porcelain-like name badge, in the character's mint/lavender palette. */
+#floating-bot .floating-label {
+  bottom:-28px; width:164px; box-sizing:border-box; padding:10px 12px;
+  border:1px solid rgba(215,195,235,.9); border-radius:18px;
+  background:linear-gradient(135deg,rgba(250,255,251,.97),rgba(244,237,253,.97));
+  color:#4c405e; box-shadow:0 5px 18px rgba(30,20,55,.14),inset 0 1px 0 #fff;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  line-height:1.35; letter-spacing:0; white-space:normal;
+  transition:box-shadow .25s,border-color .25s;
+}
+#floating-bot .floating-label::after {
+  top:-5px; width:8px; height:8px; margin-left:-4px; box-sizing:content-box;
+  border:0; border-top:1px solid #d7c3eb; border-left:1px solid #d7c3eb;
+  background:#f9fcf9; transform:rotate(45deg);
+}
+.companion-tag-title { display:block; font-size:14px; font-weight:650; }
+.companion-tag-caption { display:flex; align-items:center; justify-content:center; gap:6px; margin-top:4px; font-size:12px; font-weight:400; color:#736780; }
+.companion-tag-light { flex:none; width:6px; height:6px; border-radius:50%; background:#6db99b; box-shadow:0 0 0 3px #6db99b18; }
+.companion-tag-thinking,.companion-tag-happy { display:none; }
+#floating-bot[data-mood="thinking"] .companion-tag-idle,#floating-bot[data-mood="happy"] .companion-tag-idle { display:none; }
+#floating-bot[data-mood="thinking"] .companion-tag-thinking,#floating-bot[data-mood="happy"] .companion-tag-happy { display:inline; }
+#floating-bot[data-mood="thinking"] .companion-tag-light { background:#b59ad4; box-shadow:0 0 0 3px #b59ad422; animation:tagBreath 2s ease-in-out infinite; }
+#floating-bot:hover .floating-label,#floating-bot:focus-visible .floating-label { border-color:#baa0d4; box-shadow:0 7px 22px #21113824,inset 0 1px 0 #fff; }
+@keyframes tagBreath { 50% { opacity:.45; } }
+@media (prefers-reduced-motion:reduce) { #floating-bot .companion-tag-light { animation:none; } }
+@media (max-width:768px) {
+  #floating-bot { left:16px; --roam-x:max(0px,calc(100vw - 160px)); --roam-y:max(0px,calc(100dvh - 280px)); }
+  #floating-bot .floating-label { display:block; width:140px; bottom:-43px; padding:8px; border-radius:15px; }
+}
