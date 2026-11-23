@@ -209,7 +209,7 @@ export function mountCompanion(host, trigger) {
   document.addEventListener('visibilitychange',visibility);reduced.addEventListener('change',start);
   renderer.domElement.addEventListener('webglcontextlost',event=>{event.preventDefault();cancelAnimationFrame(raf);raf=0;host.classList.remove('is-rendered');});
   renderer.domElement.addEventListener('webglcontextrestored',()=>{host.classList.add('is-rendered');start();});
-  root.scale.set(1.05,1.04,1.03);root.rotation.y=-.16;resize();host.classList.add('is-rendered');start();
+  root.scale.set(1.14,1.04,1.08);root.rotation.y=-.16;resize();host.classList.add('is-rendered');start();
   function dispose(event){if(event.persisted)return;disposed=true;cancelAnimationFrame(raf);observer.disconnect();intersection.disconnect();document.removeEventListener('pointermove',move);document.removeEventListener('visibilitychange',visibility);reduced.removeEventListener('change',start);scene.traverse(object=>{if(object.geometry)object.geometry.dispose();});[mint,purple,purpleDark,gold,ink,white,blush].forEach(material=>material.dispose());glowMaterial.dispose();glowTexture.dispose();sphere.dispose();renderer.dispose();}
   window.addEventListener('pagehide',dispose,{once:true});
 }
