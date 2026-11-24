@@ -719,3 +719,15 @@
   #floating-bot { left:16px; --roam-x:max(0px,calc(100vw - 160px)); --roam-y:max(0px,calc(100dvh - 280px)); }
   #floating-bot .floating-label { display:block; width:140px; bottom:-43px; padding:8px; border-radius:15px; }
 }
+
+.chat-voice-bar { display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:8px 16px; border-top:1px solid #8884; font-size:12px; }
+.chat-voice-bar button,.chat-voice-bar select,.voice-read { font:inherit; color:inherit; background:transparent; border:1px solid #8886; border-radius:8px; padding:5px 8px; cursor:pointer; }
+.chat-voice-bar label { display:flex; align-items:center; gap:4px; }
+.chat-voice-bar [role=status] { flex-basis:100%; min-height:16px; }
+.chat-voice-bar button:disabled { opacity:.5; cursor:not-allowed; }
+.chat-voice-bar button[aria-pressed=true] { background:#dbeafe; color:#174378; }
+.voice-read { display:block; margin-top:8px; font-size:12px; }
+#floating-bot[data-voice=listening] .floating-bot-inner { filter:drop-shadow(0 0 9px #38bdf8); }
+#floating-bot[data-voice=speaking] .floating-bot-inner { animation:voice-glow 1s ease-in-out infinite alternate; }
+@keyframes voice-glow { to { filter:drop-shadow(0 0 10px #a78bfa); } }
+@media (prefers-reduced-motion:reduce) { #floating-bot[data-voice=speaking] .floating-bot-inner { animation:none; } }

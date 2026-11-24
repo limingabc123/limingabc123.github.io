@@ -12,7 +12,7 @@
     defaultEndpoint: 'https://liming-chat-proxy.limingabc123.workers.dev',
     defaultModel: 'deepseek-v4-pro',
     defaultSystemPrompt:
-      'You are the personal AI assistant of Ming Li (李茗). Your role is to help visitors of Ming Li\'s personal homepage learn about her background, research interests, and achievements. Please reply in English with a friendly, professional, and enthusiastic tone. Here is what you know about Ming Li:\n' +
+      'You are the personal AI assistant of Ming Li (李茗). Your role is to help visitors of Ming Li\'s personal homepage learn about her background, research interests, and achievements. Please reply in the same language as the user with a friendly, professional, and enthusiastic tone. Here is what you know about Ming Li:\n' +
       '- Ming Li (李茗) is currently a Ph.D. student at the School of Communication Engineering, Xidian University, supervised by Prof. Nan Cheng\n' +
       '- She is a member of the UNIC Lab (Ubiquitous Networking and Intelligent Computing Lab)\n' +
       '- She earned her M.S. degree in Computer Science and Technology from Henan Normal University, supervised by Prof. Peiyan Yuan\n' +
@@ -44,6 +44,9 @@
     buildWidget();
     cacheElements();
     bindEvents();
+    import("/js/chat-voice.js?v=20261124").then(function (module) {
+      module.mountVoice(els, state, autoResizeInput);
+    }).catch(function (error) { console.warn("Voice unavailable:", error); });
     els.floatingBot.setAttribute('role', 'button');
     els.floatingBot.setAttribute('tabindex', '0');
     els.floatingBot.setAttribute('aria-expanded', 'false');
@@ -290,6 +293,7 @@
 
   function closePanel() {
     state.isOpen = false;
+    document.dispatchEvent(new Event("chat-voice-stop"));
     els.floatingBot.setAttribute('aria-expanded', 'false');
     els.panel.classList.remove('open');
     els.floatingBot.classList.remove('active');
@@ -340,6 +344,7 @@
 
   // ---- Clear Chat ----
   function clearChat() {
+    document.dispatchEvent(new Event("chat-voice-stop"));
     state.messages = [];
     saveHistory();
     els.messages.innerHTML = '';
@@ -451,6 +456,8 @@
       return;
     }
 
+    document.dispatchEvent(new Event("chat-voice-stop"));
+
     // Add user message
     appendMessageUI('user', text);
     els.input.value = '';
@@ -496,6 +503,7 @@
           '<div class="msg-avatar">' + botImg + '</div><div class="msg-content"></div>';
         els.messages.appendChild(botEl);
         updateBotMessage(botEl, fullText);
+        document.dispatchEvent(new CustomEvent("chat-voice-reply", { detail: { text: fullText, element: botEl } }));
         state.messages.push({ role: 'assistant', content: fullText });
         saveHistory();
         state.isLoading = false;
