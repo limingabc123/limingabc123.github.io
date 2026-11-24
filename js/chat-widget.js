@@ -44,7 +44,7 @@
     buildWidget();
     cacheElements();
     bindEvents();
-    import("/js/chat-voice.js?v=20261124b").then(function (module) {
+    import("/js/chat-voice.js?v=20261124c").then(function (module) {
       module.mountVoice(els, state, autoResizeInput);
     }).catch(function (error) { console.warn("Voice unavailable:", error); });
     els.floatingBot.setAttribute('role', 'button');
@@ -465,6 +465,8 @@
 
     // Build messages array for API
     var apiMessages = [];
+    // Warm conversational style applies to existing saved configurations too.
+    apiMessages.push({ role: 'system', content: 'You are Xiao Ming, a warm, thoughtful research companion. Reply in the language of the user. Use natural conversational phrasing and short sentences. For casual questions keep answers brief and friendly. For research explain clearly without sacrificing accuracy. Avoid canned enthusiasm, repetitive greetings, excessive emojis, and invented personal experiences.' });
     // System prompt
     if (state.config.systemPrompt) {
       apiMessages.push({ role: 'system', content: state.config.systemPrompt });
