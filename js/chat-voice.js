@@ -17,6 +17,25 @@ export function mountVoice(els, state, resize) {
   mode.innerHTML = '<option value="system">系统语音</option><option value="natural">小茗 · 自然 AI 语音</option>';
   bar.insertBefore(mode, test);
   const disclosure = document.createElement('small'); disclosure.textContent = 'AI 合成语音'; bar.appendChild(disclosure);
+  // Keep occasional controls in a native, keyboard-accessible disclosure.
+  const options = document.createElement('details'); options.className = 'voice-options';
+  const summary = document.createElement('summary'); summary.textContent = '语音设置'; options.appendChild(summary);
+  const settings = document.createElement('div'); settings.className = 'voice-options-body';
+  function field(title, control) {
+    const label = document.createElement('label');
+    const caption = document.createElement('span'); caption.textContent = title;
+    label.append(caption, control); settings.appendChild(label);
+  }
+  field('识别语言', lang); field('声音', mode);
+  const autoLabel = auto.parentElement; autoLabel.lastChild.textContent = '自动朗读';
+  settings.append(autoLabel, test, disclosure); options.appendChild(settings);
+  bar.insertBefore(options, status);
+  mic.textContent = '🎙 说话'; mic.setAttribute('aria-label', '开始或结束语音输入');
+  stop.textContent = '■ 停止'; stop.className = 'voice-stop'; stop.hidden = true;
+  const activity = new MutationObserver(() => {
+    stop.hidden = !(mic.getAttribute('aria-pressed') === 'true' || current);
+  });
+  activity.observe(bar, {subtree:true, childList:true, attributes:true, attributeFilter:['aria-pressed']});
   let audio = null, audioURL = null, controller = null;
   mode.onchange = () => halt();
   async function naturalRead(text, button) {
@@ -51,7 +70,7 @@ export function mountVoice(els, state, resize) {
     if (synth) synth.cancel();
     utterance = null;
     if (current) { current.textContent = current === test ? '🔊 Test voice' : '🔊 Read'; delete current.dataset.ready; } current = null;
-    mic.textContent = '🎙 Speak'; mic.setAttribute('aria-pressed', 'false');
+    mic.textContent = '🎙 说话'; mic.setAttribute('aria-pressed', 'false');
     els.input.readOnly = false; els.floatingBot.dataset.voice = ''; status.textContent = '';
   }
   lang.onchange = () => { halt(); try { localStorage.ming_voice_language = lang.value; } catch (_) {} };
@@ -81,7 +100,7 @@ export function mountVoice(els, state, resize) {
     halt(); if (!Recognition) return;
     const base = els.input.value, rec = new Recognition(); session = rec;
     rec.lang = lang.value; rec.interimResults = true; rec.continuous = false;
-    els.input.readOnly = true; mic.textContent = '■ Finish'; mic.setAttribute('aria-pressed', 'true');
+    els.input.readOnly = true; mic.textContent = '■ 结束'; mic.setAttribute('aria-pressed', 'true');
     status.textContent = 'Listening…'; els.floatingBot.dataset.voice = 'listening';
     rec.onresult = event => {
       if (session !== rec) return;
