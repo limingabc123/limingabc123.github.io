@@ -44,7 +44,7 @@
     buildWidget();
     cacheElements();
     bindEvents();
-    import("/js/chat-voice.js?v=20261124").then(function (module) {
+    import("/js/chat-voice.js?v=20261124b").then(function (module) {
       module.mountVoice(els, state, autoResizeInput);
     }).catch(function (error) { console.warn("Voice unavailable:", error); });
     els.floatingBot.setAttribute('role', 'button');
