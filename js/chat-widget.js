@@ -56,7 +56,7 @@
         togglePanel();
       }
     });
-    import('/js/ming-companion.js?v=20261123i').then(function (module) {
+    import('/js/ming-companion.js?v=20261124mic').then(function (module) {
       module.mountCompanion(els.floatingBot.querySelector('.ming-companion'), els.floatingBot);
     }).catch(function (error) { console.warn('Companion fallback:', error); });
     if (state.messages.length === 0) {

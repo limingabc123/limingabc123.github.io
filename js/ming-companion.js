@@ -86,6 +86,24 @@ export function mountCompanion(host, trigger) {
   const happyMouth = ellipsoid(face, ink, [0,-.13,.704], [.12,.08,.016]);
   const tongue = ellipsoid(face, blush, [0,-.167,.722], [.065,.027,.009]);
   happyMouth.visible = tongue.visible = false;
+  // A small headset boom follows the face, with its capsule beside the smile.
+  const micMetal = new THREE.MeshStandardMaterial({ color: 0x806894, roughness: .42, metalness: .35 });
+  const micFoam = new THREE.MeshStandardMaterial({ color: 0x403b51, roughness: .95 });
+  const micLight = new THREE.MeshStandardMaterial({ color: 0x88e5d2, emissive: 0x45bea6, emissiveIntensity: .35, roughness: .4 });
+  const microphone = new THREE.Group(); face.add(microphone);
+  ellipsoid(microphone, purpleDark, [-.73,-.015,.37], [.13,.17,.12]);
+  ellipsoid(microphone, purple, [-.765,-.01,.43], [.085,.12,.08]);
+  const boomCurve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(-.76,-.06,.43), new THREE.Vector3(-.65,-.24,.60),
+    new THREE.Vector3(-.43,-.28,.76), new THREE.Vector3(-.22,-.20,.81)
+  ]);
+  microphone.add(new THREE.Mesh(new THREE.TubeGeometry(boomCurve,24,.025,8,false),micMetal));
+  const micCapsule = ellipsoid(microphone,micFoam,[-.19,-.195,.815],[.105,.065,.065]);
+  micCapsule.rotation.z = .18;
+  [-.035,0,.035].forEach(offset => {
+    ellipsoid(microphone,micMetal,[-.19+offset,-.195,.876],[.006,.037,.004]);
+  });
+  ellipsoid(microphone,micLight,[-.29,-.20,.83],[.016,.018,.018]);
   // Faithful concept details: soft lavender belly, glossy eyes and rounded swept horns.
   // Swept, gently curved lavender horns, with subtle transverse bands.
   [-1,1].forEach(side => {
@@ -210,6 +228,6 @@ export function mountCompanion(host, trigger) {
   renderer.domElement.addEventListener('webglcontextlost',event=>{event.preventDefault();cancelAnimationFrame(raf);raf=0;host.classList.remove('is-rendered');});
   renderer.domElement.addEventListener('webglcontextrestored',()=>{host.classList.add('is-rendered');start();});
   root.scale.set(1.10,1.04,1.06);root.rotation.y=-.16;resize();host.classList.add('is-rendered');start();
-  function dispose(event){if(event.persisted)return;disposed=true;cancelAnimationFrame(raf);observer.disconnect();intersection.disconnect();document.removeEventListener('pointermove',move);document.removeEventListener('visibilitychange',visibility);reduced.removeEventListener('change',start);scene.traverse(object=>{if(object.geometry)object.geometry.dispose();});[mint,purple,purpleDark,gold,ink,white,blush].forEach(material=>material.dispose());glowMaterial.dispose();glowTexture.dispose();sphere.dispose();renderer.dispose();}
+  function dispose(event){if(event.persisted)return;disposed=true;cancelAnimationFrame(raf);observer.disconnect();intersection.disconnect();document.removeEventListener('pointermove',move);document.removeEventListener('visibilitychange',visibility);reduced.removeEventListener('change',start);scene.traverse(object=>{if(object.geometry)object.geometry.dispose();});[mint,purple,purpleDark,gold,ink,white,blush,micMetal,micFoam,micLight].forEach(material=>material.dispose());glowMaterial.dispose();glowTexture.dispose();sphere.dispose();renderer.dispose();}
   window.addEventListener('pagehide',dispose,{once:true});
 }
